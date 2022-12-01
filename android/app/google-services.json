@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "158045791719",
+    "project_id": "nolar-plus",
+    "storage_bucket": "nolar-plus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158045791719:android:a965dfbd72c7b4183cc942",
+        "android_client_info": {
+          "package_name": "com.example.nolar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158045791719-pvr0tvkr3jhai73l6c9gbnarq94nf2ao.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ1N9oSa3q5VZPCGlnIXp_HMcQC4z_CQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158045791719-pvr0tvkr3jhai73l6c9gbnarq94nf2ao.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158045791719-4dmuarbsf35005vn98bkil6hcue3g81h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nolar"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
