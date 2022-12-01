@@ -282,7 +282,7 @@ class _HomeState extends State<Home> {
                             final List<DocumentSnapshot> documents =
                                 snapshot.data!.docs;
                             return SizedBox(
-                              height: MediaQuery.of(context).size.height - 70,
+                              height: MediaQuery.of(context).size.height - 250,
                               child: ListView(
                                   children: documents
                                       .map((doc) => Card(

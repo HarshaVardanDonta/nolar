@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nolar/w.dart';
+import 'package:pinput/pinput.dart';
 
 import 'home.dart';
 
@@ -23,6 +24,7 @@ class _LoginState extends State<Login> {
   User? currentUser = FirebaseAuth.instance.currentUser;
 
   Widget build(BuildContext context) {
+    bool isAuthing = false;
     return Scaffold(
         backgroundColor: Color(0xffE93838),
         body: Stack(
@@ -60,74 +62,84 @@ class _LoginState extends State<Login> {
                         ),
                         Column(
                           children: [
-                            TextField(
-                              controller: phNumber,
-                              maxLength: 10,
-                              keyboardType: TextInputType.phone,
-                              style: GoogleFonts.poppins(
-                                  textStyle: TextStyle(
-                                      color: Colors.white,
-                                      letterSpacing: 1,
-                                      fontWeight: FontWeight.w500)),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xff262626),
-                                hintText: "Mobile number",
-                                hintStyle: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                        color: Colors.white,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.w500)),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  // borderSide:
-                                  //     BorderSide(color: Colors.redAccent, width: 1.5),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  // borderSide:
-                                  //     BorderSide(color: Colors.redAccent, width: 2.5),
-                                ),
-                              ),
-                            ),
-                            AnimatedOpacity(
-                              opacity: otpsent?1:0,
-                              duration: Duration(seconds: 1),curve: Curves.ease,
-                              child: TextField(
-                                controller: otp,
-                                focusNode: _focus,
-                                autofocus: false,
-                                maxLength: 6,
-                                keyboardType: TextInputType.phone,
-                                style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                        color: Colors.white,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.w500)),
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Color(0xff262626),
-                                  hintText: "OTP",
-                                  hintStyle: GoogleFonts.poppins(
-                                      textStyle: TextStyle(
-                                          color: Colors.white,
-                                          letterSpacing: 1,
-                                          fontWeight: FontWeight.w500)),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    // borderSide:
-                                    //     BorderSide(color: Colors.redAccent, width: 1.5),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    // borderSide:
-                                    //     BorderSide(color: Colors.redAccent, width: 2.5),
-                                  ),
-                                ),
-                              ),
-                            ),
                             otpsent
-                                //validate otp
+                                ? SizedBox(
+                                    height: 100,
+                                    child: Pinput(
+                                      keyboardType: TextInputType.phone,
+                                      controller: otp,
+                                      length: 6,
+                                      enabled: true,
+                                      androidSmsAutofillMethod:
+                                          AndroidSmsAutofillMethod
+                                              .smsRetrieverApi,
+                                      defaultPinTheme: PinTheme(
+                                          height: 50,
+                                          width: 50,
+                                          textStyle: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                          decoration: BoxDecoration(
+                                              color: Colors.red[100],
+                                              borderRadius:
+                                                  BorderRadius.circular(16))),
+                                      submittedPinTheme: PinTheme(
+                                          height: 50,
+                                          width: 50,
+                                          textStyle: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                          decoration: BoxDecoration(
+                                              color: Colors.red[300],
+                                              border: Border.all(
+                                                  color: Colors.redAccent,
+                                                  width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(16))),
+                                      focusedPinTheme: PinTheme(
+                                          width: 60,
+                                          height: 60,
+                                          textStyle: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                          decoration: BoxDecoration(
+                                              color: Colors.red[200],
+                                              borderRadius:
+                                                  BorderRadius.circular(16))),
+                                    ),
+                                  )
+                                : TextField(
+                                    controller: phNumber,
+                                    maxLength: 10,
+                                    keyboardType: TextInputType.phone,
+                                    style: GoogleFonts.poppins(
+                                        textStyle: TextStyle(
+                                            color: Colors.white,
+                                            letterSpacing: 1,
+                                            fontWeight: FontWeight.w500)),
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Color(0xff262626),
+                                      hintText: "Mobile number",
+                                      hintStyle: GoogleFonts.poppins(
+                                          textStyle: TextStyle(
+                                              color: Colors.white,
+                                              letterSpacing: 1,
+                                              fontWeight: FontWeight.w500)),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        // borderSide:
+                                        //     BorderSide(color: Colors.redAccent, width: 1.5),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        // borderSide:
+                                        //     BorderSide(color: Colors.redAccent, width: 2.5),
+                                      ),
+                                    ),
+                                  ),
+                            //validate otp
+                            otpsent
                                 ? ElevatedButton(
                                     onPressed: () async {
                                       try {
@@ -135,9 +147,9 @@ class _LoginState extends State<Login> {
                                             PhoneAuthProvider.credential(
                                                 verificationId: Login.verify,
                                                 smsCode: otp.text.toString());
+
                                         await FirebaseAuth.instance
                                             .signInWithCredential(credentials);
-                                        // print("sign in success");
 
                                         Navigator.pushReplacementNamed(
                                             context, '/home');
@@ -146,18 +158,18 @@ class _LoginState extends State<Login> {
                                         });
                                       } catch (e) {
                                         print(e.toString());
-                                        print(otp.toString());
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: T1(
-                                          content: "wrong otp",
+                                          content: e.toString(),
                                           color: Colors.redAccent,
                                         )));
                                       }
                                     },
                                     child: T1(
-                                        content: "validate OTP",
+                                        content: "Validate OTP",
                                         color: Colors.white))
+
                                 //get otp
                                 : ElevatedButton(
                                     onPressed: () async {
@@ -171,13 +183,29 @@ class _LoginState extends State<Login> {
                                                 await FirebaseAuth.instance
                                                     .signInWithCredential(
                                                         credentials);
+                                                await Navigator
+                                                    .pushReplacementNamed(
+                                                        context, '/home');
                                               },
                                               verificationFailed:
                                                   (FirebaseAuthException e) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                        content: T1(
+                                                  content:
+                                                      "Verification Failed",
+                                                  color: Colors.redAccent,
+                                                )));
+                                                phNumber.clear();
                                                 if (e.code ==
                                                     'invalid-phone-number') {
-                                                  print(
-                                                      'The provided phone number is not valid.');
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content: T1(
+                                                    content:
+                                                        "Invalid PhoneNumber",
+                                                    color: Colors.redAccent,
+                                                  )));
                                                 }
                                               },
                                               //executes after otp is sent
@@ -190,12 +218,11 @@ class _LoginState extends State<Login> {
                                                 setState(() {
                                                   otpsent = true;
                                                 });
-                                                // Navigator.pushNamed(context, '/otpVal');
                                               },
                                               codeAutoRetrievalTimeout:
                                                   (String verificationId) {});
                                     },
-                                    child: Text("Get OTP"))
+                                    child: Text("Get OTP")),
                           ],
                         ),
                         Column(
