@@ -48,6 +48,8 @@ dependencies:
   flutter_local_notifications: ^12.0.4
   rive: ^0.9.1
   pinput: ^2.2.16
+  page_view_indicators: ^2.0.0
+  google_sign_in: ^5.4.2
 
 dev_dependencies:
   flutter_test:

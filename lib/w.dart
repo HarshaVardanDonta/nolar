@@ -139,3 +139,27 @@ class _CustomMessageState extends State<CustomMessage> {
   }
 }
 
+class InfoCard extends StatefulWidget {
+  dynamic content;
+  InfoCard({Key? key, required this.content}) : super(key: key);
+
+  @override
+  State<InfoCard> createState() => _InfoCardState();
+}
+
+class _InfoCardState extends State<InfoCard> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.fromLTRB(30, 150, 30, 150),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: widget.content,
+    );
+  }
+}
+
+
