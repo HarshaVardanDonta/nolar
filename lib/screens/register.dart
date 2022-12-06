@@ -123,19 +123,55 @@ class _RegisterState extends State<Register> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50))),
                   onPressed: () async {
-                    await FirebaseFirestore.instance
-                        .collection("registration")
-                        .doc("${currentUser?.phoneNumber}")
-                        .set({
-                      "UserName": nameController.text.toString(),
-                      "Age": ageController.text.toString(),
-                      "Occupation": occupationController.text.toString(),
-                      "Address": addressController.text.toString(),
-                      "BloodGroup": selectedBlood
-                    }, SetOptions(merge: true));
+                    if(
+                    nameController!= null &&
+                    ageController!=null &&
+                    occupationController!=null &&
+                    addressController!=null &&
+                    selectedBlood != "Select Blood Group"
+                    ){
+                      await FirebaseFirestore.instance
+                          .collection("registration")
+                          .doc("${currentUser?.phoneNumber}")
+                          .set({
+                        "UserName": nameController.text.toString(),
+                        "Age": ageController.text.toString(),
+                        "Occupation": occupationController.text.toString(),
+                        "Address": addressController.text.toString(),
+                        "BloodGroup": selectedBlood,
+                        "phone":currentUser?.phoneNumber.toString().substring(3),
+                      }, SetOptions(merge: true));
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Thank You'),
+                            content: SingleChildScrollView(
+                              child: ListBody(
+                                children: const <Widget>[
+                                  Text(
+                                      "Thank you for registering as a donor, we appreciate it,"),
+                                ],
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          ));
+                    }
+                    else{
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(
+                          content: T1(
+                            content: "Please provide all details",
+                            color: Colors.redAccent,
+                          )));
+                    }
                     setState(() {
-                      currentUser?.updateProfile(
-                          displayName: nameController.text.toString());
                       Home.dispName = nameController.text.toString();
                     });
 
@@ -145,27 +181,7 @@ class _RegisterState extends State<Register> {
                     addressController.clear();
                     selectedBlood = dropItems.first;
 
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: const Text('Thank You'),
-                              content: SingleChildScrollView(
-                                child: ListBody(
-                                  children: const <Widget>[
-                                    Text(
-                                        "Thank you for registering as a donor, we appreciate it,"),
-                                  ],
-                                ),
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Thank You'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ));
+
                   },
                   child: T1(content: "Submit", color: Colors.red)),
             ],

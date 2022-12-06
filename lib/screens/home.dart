@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,11 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nolar/screens/infoUpdate.dart';
 import 'package:nolar/screens/register.dart';
 import 'package:nolar/screens/request.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../w.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -30,351 +33,443 @@ class _HomeState extends State<Home> {
     String? picUrl = currentUser?.photoURL.toString();
     print(picUrl);
     Home.dispName = "";
+
     currentUser?.displayName != null
         ? Home.dispName = currentUser?.displayName
         : Home.dispName = currentUser?.phoneNumber;
     FirebaseFirestore db = FirebaseFirestore.instance;
-    return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 70,
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          actions: [
-            selectedPage != 0
-                ? Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: InkWell(
-                      onTap: () {
-                        controller.animateToPage(0,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.ease);
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: Colors.black,
-                        radius: 20,
-                        child: Icon(
-                          Icons.account_circle_sharp,
-                          size: 25,
-                        ),
-                      ),
-                    ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: InkWell(
-                      onTap: () {},
-                      child: CircleAvatar(
-                        backgroundColor: Colors.black,
-                        radius: 20,
-                        child: Icon(
-                          Icons.settings,
-                          size: 25,
-                        ),
-                      ),
-                    ),
-                  )
-          ],
-        ),
-        drawer: Drawer(
-          child: SafeArea(
-              child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                T1(content: "Hi ${Home.dispName}", color: Colors.redAccent),
-                DrawerButton(
-                  content: "About US",
-                  fun: () {},
-                ),
-                SizedBox(height: 20),
-                DrawerButton(
-                  content: "Our Team",
-                  fun: () {},
-                ),
-                SizedBox(height: 20),
-                DrawerButton(
-                  content: "Contact US",
-                  fun: () async {
-                    var url =
-                        "https://api.whatsapp.com/send/?phone=+919391774548&text=Hello";
-                    await launch(url);
-                  },
-                ),
-                SizedBox(height: 20),
-                DrawerButton(
-                  content: "Donate",
-                  fun: () {},
-                ),
-                SizedBox(height: 20),
-                DrawerButton(
-                  content: "Logout",
-                  fun: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
-                  },
-                )
-              ],
-            ),
-          )),
-        ),
-        body: SafeArea(
-            child: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: controller,
-          onPageChanged: (index) {
-            setState(() {
-              selectedPage = index;
-            });
-          },
-          children: [
-            //profile
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Stack(children: [
-                      CircleAvatar(
-                        radius: 70,
-                        backgroundImage: NetworkImage(picUrl!),
-                      ),
-                      Positioned(
-                        left: 100,
-                        top: 100,
-                        child: GestureDetector(
-                          //edit display image
-                          onTap: () async {
-                            final ImagePicker _picker = ImagePicker();
-                            final image = await _picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 30);
-                            final path = image?.path;
-                            setState(() {
-                              file = File(path!);
-                            });
+    print(currentUser?.displayName);
+    print(currentUser?.providerData);
+    print(currentUser?.photoURL);
 
-                            final storageRef = FirebaseStorage.instance
-                                .ref()
-                                .child(
-                                    "profilePics/${currentUser?.phoneNumber}");
-                            await storageRef.putFile(file!);
-                            final imageUrl = await storageRef.getDownloadURL();
-                            setState(() {
-                              currentUser?.updatePhotoURL(imageUrl);
-                            });
-                            setState(() {});
-                            setState(() {});
-                            // await currentUser?.updatePhotoURL();
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(50)),
-                            child: Center(
+    refresh() {
+      setState(() {
+        print("set state called");
+      });
+    }
+
+
+
+    return Scaffold(
+        appBar: (currentUser?.displayName != null &&
+                currentUser?.phoneNumber != null)
+            ? AppBar(
+                toolbarHeight: 70,
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                actions: [
+                  selectedPage != 0
+                      ? Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: InkWell(
+                            onTap: () {
+                              controller.animateToPage(0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.black,
+                              radius: 20,
                               child: Icon(
-                                Icons.edit,
+                                Icons.account_circle_sharp,
+                                size: 25,
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    ]),
-                    SizedBox(height: 20),
-                    Divider(thickness: 1),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        T1(content: "Name: ", color: Colors.redAccent),
-                        T1(
-                            content: "${currentUser?.displayName}",
-                            color: Colors.redAccent),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        T1(content: "Phone: ", color: Colors.redAccent),
-                        T1(
-                            content: "${currentUser?.phoneNumber}",
-                            color: Colors.redAccent),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Divider(thickness: 1),
-                    //acheivments
-                    T1(content: "Acheivements", color: Colors.redAccent),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      margin: EdgeInsets.all(10),
-                      height: 150,
-                      child: ShaderMask(
-                        shaderCallback: (Rect rect) {
-                          return LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Colors.purple,
-                              Colors.transparent,
-                              Colors.transparent,
-                              Colors.purple
-                            ],
-                            stops: [
-                              0.0,
-                              0.02,
-                              0.98,
-                              1.0
-                            ], // 10% purple, 80% transparent, 10% purple
-                          ).createShader(rect);
-                        },
-                        blendMode: BlendMode.dstOut,
-                        child: GridView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 10,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 20,
-                                    mainAxisSpacing: 40),
-                            itemBuilder: (context, index) {
-                              return CircleAvatar();
-                            }),
-                      ),
-                    )
-                  ],
-                ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: InkWell(
+                            onTap: () {},
+                            child: CircleAvatar(
+                              backgroundColor: Colors.black,
+                              radius: 20,
+                              child: Icon(
+                                Icons.settings,
+                                size: 25,
+                              ),
+                            ),
+                          ),
+                        )
+                ],
+              )
+            : AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.white,
+                elevation: 0,
               ),
-            ),
-            //home
-            Register(),
-            // request blood
-            Request(),
-            //  Notifications
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+        drawer: Align(
+          alignment: Alignment.topLeft,
+          child: SafeArea(
+            child: Container(
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
+              width: MediaQuery.of(context).size.width * 0.6,
+              height: 500,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  T1(content: "Messages", color: Colors.black),
-                  CustomMessage(),
-                  CustomMessage(),
-                  CustomMessage(),
+                  CircleAvatar(
+                    radius: 55,
+                    backgroundImage: NetworkImage(picUrl!),
+                  ),
+                  SizedBox(height: 10),
+                  Align(
+                      alignment: Alignment.center,
+                      child: T1(
+                          content: "${currentUser?.displayName}",
+                          color: Colors.redAccent)),
+                  DrawerButton(
+                    content: "About US",
+                    fun: () {},
+                  ),
+                  SizedBox(height: 20),
+                  DrawerButton(
+                    content: "Our Team",
+                    fun: () {},
+                  ),
+                  SizedBox(height: 20),
+                  DrawerButton(
+                    content: "Contact US",
+                    fun: () async {
+                      var url =
+                          "https://api.whatsapp.com/send/?phone=+919391774548&text=Hello";
+                      await launch(url);
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  DrawerButton(
+                    content: "Donate",
+                    fun: () {},
+                  ),
+                  SizedBox(height: 20),
+                  DrawerButton(
+                    content: "Logout",
+                    fun: () async {
+                      await FirebaseAuth.instance.signOut();
+                      // Navigator.pop(context);
+                      Navigator.popUntil(context, ModalRoute.withName('/'));
+                    },
+                  )
                 ],
               ),
             ),
-            //  show registered users
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    T1(content: "Registered Donors", color: Colors.black),
-                    FutureBuilder(
-                        future: FirebaseFirestore.instance
-                            .collection("registration")
-                            .get(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final List<DocumentSnapshot> documents =
-                                snapshot.data!.docs;
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height - 250,
-                              child: ListView(
-                                  children: documents
-                                      .map((doc) => Card(
-                                            child: ListTile(
-                                              title: Text(doc['UserName']),
-                                              subtitle: Text(doc['BloodGroup']),
-                                            ),
-                                          ))
-                                      .toList()),
-                            );
-                          }
-                          return CircularProgressIndicator();
-                        }),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )),
-        bottomNavigationBar: Container(
-          child: Stack(
-            children: [
-              Container(
-                height: 68,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 8,
-                child: Container(
-                  height: 60,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Color(0xff201D1D),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
+          ),
+        ),
+        body: (currentUser?.displayName != null &&
+                currentUser?.phoneNumber != null)
+            ? SafeArea(
+                child: PageView(
+                physics: NeverScrollableScrollPhysics(),
+                controller: controller,
+                onPageChanged: (index) {
+                  setState(() {
+                    selectedPage = index;
+                  });
+                },
+                children: [
+                  //profile
+                  SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Stack(children: [
+
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                picUrl,
+                                height: 150,
+                                  width: 150,
+                                fit: BoxFit.fitWidth,
+                                frameBuilder: (context, child, frame, wasSynchronouslyLoaded){
+                                  return child;
+                                },
+                                loadingBuilder: (context, child, loadingProgress){
+                                  if(loadingProgress == null){
+                                    return child;
+                                  }
+                                  else{
+                                    return Center(child: CircularProgressIndicator());
+                                  }
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              left: 100,
+                              top: 100,
+                              child: GestureDetector(
+                                //edit display image
+                                onTap: () async {
+                                  final ImagePicker _picker = ImagePicker();
+                                  final image = await _picker.pickImage(
+                                      source: ImageSource.gallery,
+                                      imageQuality: 30);
+                                  final path = image?.path;
+                                  setState(() {
+                                    file = File(path!);
+                                  });
+
+                                  final storageRef = FirebaseStorage.instance
+                                      .ref()
+                                      .child(
+                                          "profilePics/${currentUser?.phoneNumber}");
+                                  await storageRef.putFile(file!);
+                                  final imageUrl =
+                                      await storageRef.getDownloadURL();
+                                  await currentUser?.updatePhotoURL(imageUrl);
+                                  // await currentUser?.updatePhotoURL();
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(50)),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.edit,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
+                          SizedBox(height: 20),
+                          Divider(thickness: 1),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              T1(content: "Name: ", color: Colors.redAccent),
+                              SizedBox(
+                                width: 250,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: T1(
+                                      content: "${currentUser?.displayName}",
+                                      color: Colors.redAccent),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              T1(content: "Phone: ", color: Colors.redAccent),
+                              T1(
+                                  content: "${currentUser?.phoneNumber}",
+                                  color: Colors.redAccent),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              T1(content: "Email: ", color: Colors.redAccent),
+                              SizedBox(
+                                width: 300,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: T1(
+                                      content: "${currentUser?.email}",
+                                      color: Colors.redAccent),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Divider(thickness: 1),
+                          //acheivments
+                          T1(content: "Acheivements", color: Colors.redAccent),
+                          SizedBox(height: 20),
+                          Container(
+                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            margin: EdgeInsets.all(10),
+                            height: 150,
+                            child: ShaderMask(
+                              shaderCallback: (Rect rect) {
+                                return LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Colors.purple,
+                                    Colors.transparent,
+                                    Colors.transparent,
+                                    Colors.purple
+                                  ],
+                                  stops: [
+                                    0.0,
+                                    0.02,
+                                    0.98,
+                                    1.0
+                                  ], // 10% purple, 80% transparent, 10% purple
+                                ).createShader(rect);
+                              },
+                              blendMode: BlendMode.dstOut,
+                              child: GridView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 10,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 20,
+                                          mainAxisSpacing: 40),
+                                  itemBuilder: (context, index) {
+                                    return CircleAvatar();
+                                  }),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      //Dashboard
-                      IconButton(
-                          onPressed: () {
-                            controller.animateToPage(1,
-                                duration: Duration(milliseconds: 500),
-                                curve: Curves.ease);
-                          },
-                          icon: Icon(
-                            Icons.app_registration,
-                            color: Colors.red,
-                            size: 30,
-                          )),
-                      //request blood
-                      IconButton(
-                        icon: Image.asset("assets/RequestBlood.png"),
-                        onPressed: () {
-                          controller.animateToPage(2,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease);
-                        },
-                      ),
-                      //  notifications
-                      IconButton(
-                        icon: Image.asset("assets/Notifications.png"),
-                        onPressed: () {
-                          controller.animateToPage(3,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease);
-                        },
-                      ),
-                      IconButton(
-                        icon: Image.asset("assets/Notifications.png"),
-                        onPressed: () {
-                          controller.animateToPage(4,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease);
-                        },
-                      ),
-                    ],
+                  //home
+                  Register(),
+                  // request blood
+                  Request(),
+                  //  Notifications
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        T1(content: "Messages", color: Colors.black),
+                        CustomMessage(),
+                        CustomMessage(),
+                        CustomMessage(),
+                      ],
+                    ),
                   ),
-                ),
+                  //  show registered users
+                  SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          T1(content: "Registered Donors", color: Colors.black),
+                          FutureBuilder(
+                              future: FirebaseFirestore.instance
+                                  .collection("registration")
+                                  .get(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final List<DocumentSnapshot> documents =
+                                      snapshot.data!.docs;
+                                  return SizedBox(
+                                    height: MediaQuery.of(context).size.height -
+                                        250,
+                                    child: ListView(
+                                        children: documents
+                                            .map((doc) => Card(
+                                                  child:
+                                                      doc==ConnectionState.waiting?
+                                                          CircularProgressIndicator():
+                                                  ListTile(
+                                                    leading:
+                                                        // Image.network(
+                                                        //   "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826",
+                                                        //   frameBuilder: (context, child, frame, wasSynchronouslyLoaded){
+                                                        //   return child;
+                                                        // },
+                                                        //   loadingBuilder: (context, child, loadingProgress){
+                                                        //     if(loadingProgress == null){
+                                                        //       return child;
+                                                        //     }
+                                                        //     else{
+                                                        //       return Center(child: CircularProgressIndicator());
+                                                        //     }
+                                                        //   },
+                                                        // ),
+                                                    CircleAvatar(
+                                                      radius: 50,
+                                                      backgroundImage:
+                                                      doc==ConnectionState.waiting?
+                                                          NetworkImage("https://via.placeholder.com/150x150.png?text=user")
+                                                      :
+                                                      NetworkImage(
+                                                          "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826"),
+                                                    ),
+                                                    title:
+                                                        Text(doc['UserName']),
+                                                    subtitle:
+                                                        Text(doc['BloodGroup']),
+                                                  ),
+                                                ))
+                                            .toList()),
+                                  );
+                                }
+                                return CircularProgressIndicator();
+                              }),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ))
+            //if username and disp name is not updated
+            : InfoUpdate(
+                notifyParent: refresh,
               ),
-            ],
-          ),
-        ));
+        bottomNavigationBar: (currentUser?.displayName != null &&
+                currentUser?.phoneNumber != null)
+            ? Container(
+                margin: EdgeInsets.all(9),
+                height: 60,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Color(0xff201D1D),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    //Dashboard
+                    IconButton(
+                        onPressed: () {
+                          controller.animateToPage(1,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.ease);
+                        },
+                        icon: Icon(
+                          Icons.app_registration,
+                          color: Colors.red,
+                          size: 30,
+                        )),
+                    //request blood
+                    IconButton(
+                      icon: Image.asset("assets/RequestBlood.png"),
+                      onPressed: () {
+                        controller.animateToPage(2,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.ease);
+                      },
+                    ),
+                    //  notifications
+                    IconButton(
+                      icon: Image.asset("assets/Notifications.png"),
+                      onPressed: () {
+                        controller.animateToPage(3,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.ease);
+                      },
+                    ),
+                    IconButton(
+                      icon: Image.asset("assets/Notifications.png"),
+                      onPressed: () {
+                        controller.animateToPage(4,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.ease);
+                      },
+                    ),
+                  ],
+                ),
+              )
+            : SizedBox(height: 10, child: Container()));
   }
 }

@@ -17,6 +17,7 @@ class _T1State extends State<T1> {
   Widget build(BuildContext context) {
     return Text(
       widget.content,
+      overflow: TextOverflow.ellipsis,
       style: GoogleFonts.poppins(
           textStyle: TextStyle(
               fontSize: 20,
@@ -151,6 +152,7 @@ class _InfoCardState extends State<InfoCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(20),
       margin: EdgeInsets.fromLTRB(30, 150, 30, 150),
       decoration: BoxDecoration(

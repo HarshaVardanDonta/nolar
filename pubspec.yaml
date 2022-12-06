@@ -50,6 +50,10 @@ dependencies:
   pinput: ^2.2.16
   page_view_indicators: ^2.0.0
   google_sign_in: ^5.4.2
+  carousel_slider: ^4.1.1
+  carousel_pro: ^1.0.0
+  card_swiper: ^2.0.4
+  image_cropper: ^3.0.1
 
 dev_dependencies:
   flutter_test:
