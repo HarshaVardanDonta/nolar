@@ -14,6 +14,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../w.dart';
 import 'package:image_cropper/image_cropper.dart';
 
+import 'dash,dart.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
   static String? dispName = "";
@@ -48,9 +50,8 @@ class _HomeState extends State<Home> {
       });
     }
 
-
-
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: (currentUser?.displayName != null &&
                 currentUser?.phoneNumber != null)
             ? AppBar(
@@ -104,34 +105,54 @@ class _HomeState extends State<Home> {
           child: SafeArea(
             child: Container(
               margin: EdgeInsets.all(10),
-              padding: EdgeInsets.all(10),
+              // padding: EdgeInsets.all(10),
               width: MediaQuery.of(context).size.width * 0.6,
-              height: 500,
+              height: 450,
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 55,
-                    backgroundImage: NetworkImage(picUrl!),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.red,
+                              Colors.white,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20))),
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundImage: NetworkImage(picUrl!),
+                          ),
+                          SizedBox(height: 10),
+                          Align(
+                              alignment: Alignment.center,
+                              child: T1(
+                                  content: "${currentUser?.displayName}",
+                                  color: Colors.redAccent)),
+                        ],
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 10),
-                  Align(
-                      alignment: Alignment.center,
-                      child: T1(
-                          content: "${currentUser?.displayName}",
-                          color: Colors.redAccent)),
+                  SizedBox(height: 20),
                   DrawerButton(
                     content: "About US",
                     fun: () {},
                   ),
-                  SizedBox(height: 20),
                   DrawerButton(
                     content: "Our Team",
                     fun: () {},
                   ),
-                  SizedBox(height: 20),
                   DrawerButton(
                     content: "Contact US",
                     fun: () async {
@@ -140,12 +161,10 @@ class _HomeState extends State<Home> {
                       await launch(url);
                     },
                   ),
-                  SizedBox(height: 20),
                   DrawerButton(
                     content: "Donate",
                     fun: () {},
                   ),
-                  SizedBox(height: 20),
                   DrawerButton(
                     content: "Logout",
                     fun: () async {
@@ -178,23 +197,24 @@ class _HomeState extends State<Home> {
                       child: Column(
                         children: [
                           Stack(children: [
-
                             ClipRRect(
                               borderRadius: BorderRadius.circular(100),
                               child: Image.network(
                                 picUrl,
                                 height: 150,
-                                  width: 150,
-                                fit: BoxFit.fitWidth,
-                                frameBuilder: (context, child, frame, wasSynchronouslyLoaded){
+                                width: 150,
+                                fit: BoxFit.cover,
+                                frameBuilder: (context, child, frame,
+                                    wasSynchronouslyLoaded) {
                                   return child;
                                 },
-                                loadingBuilder: (context, child, loadingProgress){
-                                  if(loadingProgress == null){
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
                                     return child;
-                                  }
-                                  else{
-                                    return Center(child: CircularProgressIndicator());
+                                  } else {
+                                    return Center(
+                                        child: CircularProgressIndicator());
                                   }
                                 },
                               ),
@@ -223,6 +243,12 @@ class _HomeState extends State<Home> {
                                       await storageRef.getDownloadURL();
                                   await currentUser?.updatePhotoURL(imageUrl);
                                   // await currentUser?.updatePhotoURL();
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                          content: T1(
+                                    content: "Image update success",
+                                    color: Colors.redAccent,
+                                  )));
                                   setState(() {});
                                 },
                                 child: Container(
@@ -328,11 +354,13 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
-                  //home
+                  Dash(),
+                  //register as a donor
                   Register(),
                   // request blood
                   Request(),
                   //  Notifications
+                  //TODO: implement notifications
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -366,39 +394,41 @@ class _HomeState extends State<Home> {
                                     child: ListView(
                                         children: documents
                                             .map((doc) => Card(
-                                                  child:
-                                                      doc==ConnectionState.waiting?
-                                                          CircularProgressIndicator():
-                                                  ListTile(
-                                                    leading:
-                                                        // Image.network(
-                                                        //   "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826",
-                                                        //   frameBuilder: (context, child, frame, wasSynchronouslyLoaded){
-                                                        //   return child;
-                                                        // },
-                                                        //   loadingBuilder: (context, child, loadingProgress){
-                                                        //     if(loadingProgress == null){
-                                                        //       return child;
-                                                        //     }
-                                                        //     else{
-                                                        //       return Center(child: CircularProgressIndicator());
-                                                        //     }
-                                                        //   },
-                                                        // ),
-                                                    CircleAvatar(
-                                                      radius: 50,
-                                                      backgroundImage:
-                                                      doc==ConnectionState.waiting?
-                                                          NetworkImage("https://via.placeholder.com/150x150.png?text=user")
-                                                      :
-                                                      NetworkImage(
-                                                          "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826"),
-                                                    ),
-                                                    title:
-                                                        Text(doc['UserName']),
-                                                    subtitle:
-                                                        Text(doc['BloodGroup']),
-                                                  ),
+                                                  child: doc ==
+                                                          ConnectionState
+                                                              .waiting
+                                                      ? CircularProgressIndicator()
+                                                      : ListTile(
+                                                          leading:
+                                                              // Image.network(
+                                                              //   "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826",
+                                                              //   frameBuilder: (context, child, frame, wasSynchronouslyLoaded){
+                                                              //   return child;
+                                                              // },
+                                                              //   loadingBuilder: (context, child, loadingProgress){
+                                                              //     if(loadingProgress == null){
+                                                              //       return child;
+                                                              //     }
+                                                              //     else{
+                                                              //       return Center(child: CircularProgressIndicator());
+                                                              //     }
+                                                              //   },
+                                                              // ),
+                                                              CircleAvatar(
+                                                            radius: 50,
+                                                            backgroundImage: doc ==
+                                                                    ConnectionState
+                                                                        .waiting
+                                                                ? NetworkImage(
+                                                                    "https://via.placeholder.com/150x150.png?text=user")
+                                                                : NetworkImage(
+                                                                    "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826"),
+                                                          ),
+                                                          title: Text(
+                                                              doc['UserName']),
+                                                          subtitle: Text(doc[
+                                                              'BloodGroup']),
+                                                        ),
                                                 ))
                                             .toList()),
                                   );
@@ -429,10 +459,22 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    //Dashboard
+                    //home
                     IconButton(
                         onPressed: () {
                           controller.animateToPage(1,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.ease);
+                        },
+                        icon: Icon(
+                          Icons.home_filled,
+                          color: Colors.red,
+                          size: 30,
+                        )),
+                    //Dashboard
+                    IconButton(
+                        onPressed: () {
+                          controller.animateToPage(2,
                               duration: Duration(milliseconds: 500),
                               curve: Curves.ease);
                         },
@@ -445,7 +487,7 @@ class _HomeState extends State<Home> {
                     IconButton(
                       icon: Image.asset("assets/RequestBlood.png"),
                       onPressed: () {
-                        controller.animateToPage(2,
+                        controller.animateToPage(3,
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
                       },
@@ -454,7 +496,7 @@ class _HomeState extends State<Home> {
                     IconButton(
                       icon: Image.asset("assets/Notifications.png"),
                       onPressed: () {
-                        controller.animateToPage(3,
+                        controller.animateToPage(4,
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
                       },
@@ -462,7 +504,7 @@ class _HomeState extends State<Home> {
                     IconButton(
                       icon: Image.asset("assets/Notifications.png"),
                       onPressed: () {
-                        controller.animateToPage(4,
+                        controller.animateToPage(5,
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
                       },

@@ -44,6 +44,7 @@ class _RequestState extends State<Request> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -52,8 +53,6 @@ class _RequestState extends State<Request> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/logo3.png"),
-                SizedBox(height: 20),
                 T1(content: "Request blood", color: Colors.redAccent),
                 SizedBox(height: 20),
                 RegisterTextField(
@@ -66,7 +65,7 @@ class _RequestState extends State<Request> {
                   tooltip: "Select blood type",
                   offset: Offset(1,0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)
+                    borderRadius: BorderRadius.circular(16)
                   ),
                   onSelected: (index) {
                     setState(() {
@@ -75,9 +74,9 @@ class _RequestState extends State<Request> {
                   },
                   child: Container(
                     margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.fromLTRB(10, 16, 10, 16),
+                    padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(16),
                         border:
                             Border.all(color: Colors.redAccent, width: 1.5)),
                     child: Row(
@@ -121,7 +120,7 @@ class _RequestState extends State<Request> {
                   tooltip: "Select requirement",
                   offset: Offset(1,0),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)
+                      borderRadius: BorderRadius.circular(16)
                   ),
                   onSelected: (index) {
                     setState(() {
@@ -130,9 +129,9 @@ class _RequestState extends State<Request> {
                   },
                   child: Container(
                     margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.fromLTRB(10, 16, 10, 16),
+                    padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(16),
                         border:
                         Border.all(color: Colors.redAccent, width: 1.5)),
                     child: Row(
@@ -171,9 +170,9 @@ class _RequestState extends State<Request> {
 
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.red[100],
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50))),
+                            borderRadius: BorderRadius.circular(10))),
                     onPressed: () {
                       showDialog(
                           context: context,

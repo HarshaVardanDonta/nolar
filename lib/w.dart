@@ -41,7 +41,7 @@ class _DrawerButtonState extends State<DrawerButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.white,elevation: 0),
         onPressed: widget.fun,
         child: T1(content: widget.content, color: Colors.red));
   }
@@ -63,6 +63,7 @@ class _RegisterTexxtFieldState extends State<RegisterTexxtField> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
+        autofocus: false,
         controller: widget.controller,
         style: TextStyle(color: Colors.redAccent),
         decoration: InputDecoration(
@@ -73,10 +74,10 @@ class _RegisterTexxtFieldState extends State<RegisterTexxtField> {
                     letterSpacing: 1,
                     fontWeight: FontWeight.w500)),
             enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: Colors.redAccent, width: 1.5)),
             focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: Colors.redAccent, width: 2.5))),
       ),
     );
@@ -107,10 +108,10 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
                     letterSpacing: 1,
                     fontWeight: FontWeight.w500)),
             enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: Colors.redAccent, width: 1.5)),
             focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: Colors.redAccent, width: 2.5))),
       ),
     );
