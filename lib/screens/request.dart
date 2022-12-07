@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nolar/screens/home.dart';
 import 'package:nolar/w.dart';
+import 'package:pinput/pinput.dart';
 
 List<String> dropItems = [
   "Select Blood Group",
@@ -32,183 +35,538 @@ class Request extends StatefulWidget {
 }
 
 class _RequestState extends State<Request> {
-  bool forPlatlets = false;
-  bool forPlasma = false;
-
   TextEditingController patientName = TextEditingController();
   TextEditingController hospName = TextEditingController();
-  TextEditingController hospLocation = TextEditingController();
+  TextEditingController patientAge = TextEditingController();
+  TextEditingController reasonForRequest = TextEditingController();
+  TextEditingController bloodGroup = TextEditingController();
   String selectedBlood = dropItems.first;
   String selectedReq = dropForReq.first;
+  bool selectedBloodButton = true;
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                T1(content: "Request blood", color: Colors.redAccent),
-                SizedBox(height: 20),
-                RegisterTextField(
-                    content: "Name of the patient", controller: patientName),
-                RegisterTextField(
-                    content: "Hospital Name", controller: hospName),
-                RegisterTextField(
-                    content: "Hospital Location", controller: hospLocation),
-                PopupMenuButton(
-                  tooltip: "Select blood type",
-                  offset: Offset(1,0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)
-                  ),
-                  onSelected: (index) {
-                    setState(() {
-                      selectedBlood = dropItems[index];
-                    });
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border:
-                            Border.all(color: Colors.redAccent, width: 1.5)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 10),
+            Container(
+                padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomLeft: Radius.circular(10))),
+                child: T1(content: "Request", color: Colors.white)),
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: Column(
                       children: [
-                        Text(
-                          selectedBlood,
-                          style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.w500)),
+                        //blood group
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedBloodButton = true;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(10, 8, 10, 8),
+                            decoration: BoxDecoration(
+                              color: selectedBloodButton
+                                  ? Colors.red
+                                  : Colors.grey[500],
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Blood Group",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                          fontSize: 17,
+                                          color: selectedBloodButton
+                                              ? Colors.white
+                                              : Colors.black,
+                                          letterSpacing: 0,
+                                          fontWeight: FontWeight.w500)),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 15,
+                                  color: selectedBloodButton
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.redAccent,
+                        SizedBox(height: 20),
+                        //blood type
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedBloodButton = false;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(10, 8, 10, 8),
+                            decoration: BoxDecoration(
+                              color: selectedBloodButton
+                                  ? Colors.grey[500]
+                                  : Colors.red,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Blood Type",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                          fontSize: 17,
+                                          color: selectedBloodButton
+                                              ? Colors.black
+                                              : Colors.white,
+                                          letterSpacing: 0,
+                                          fontWeight: FontWeight.w500)),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 15,
+                                  color: selectedBloodButton
+                                      ? Colors.black
+                                      : Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  itemBuilder: (BuildContext context) {
-                    return List.generate(dropItems.length, (index) {
-                      return PopupMenuItem(
-                          value: index,
-                          child: Text(
-                            dropItems[index],
-                            style: GoogleFonts.poppins(
-                                textStyle: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.w500)),
-                          ));
-                    });
-                  },
-                ),
-
-
-
-                //for req
-                PopupMenuButton(
-                  tooltip: "Select requirement",
-                  offset: Offset(1,0),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)
-                  ),
-                  onSelected: (index) {
-                    setState(() {
-                      selectedReq = dropForReq[index];
-                    });
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border:
-                        Border.all(color: Colors.redAccent, width: 1.5)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          selectedReq,
-                          style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.w500)),
-                        ),
-                        Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.redAccent,
-                        ),
-                      ],
-                    ),
-                  ),
-                  itemBuilder: (BuildContext context) {
-                    return List.generate(dropForReq.length, (index) {
-                      return PopupMenuItem(
-                          value: index,
-                          child: Text(
-                            dropForReq[index],
-                            style: GoogleFonts.poppins(
-                                textStyle: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.w500)),
-                          ));
-                    });
-                  },
-                ),
-
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[100],
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10))),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: const Text('Thank You'),
-                                content: SingleChildScrollView(
-                                  child: ListBody(
-                                    children: const <Widget>[
-                                      Text(
-                                          "Thank you for requesting, we'll get back to you as soon as possible,"),
+                  SizedBox(width: 20),
+                  Flexible(
+                    flex: 3,
+                    child: selectedBloodButton
+                        ? AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                //a+ and a-
+                                Column(
+                                  children: [
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("A+");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "A+",
+                                                color: Colors.white)),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("A-");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "A-",
+                                                color: Colors.white)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                //ab+ and ab-
+                                Column(
+                                  children: [
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("AB+");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "AB+",
+                                                color: Colors.white)),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("AB-");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "AB-",
+                                                color: Colors.white)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                //b+ and b-
+                                Column(
+                                  children: [
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("B+");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "B+",
+                                                color: Colors.white)),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("B-");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "B-",
+                                                color: Colors.white)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                //o+ and o-
+                                Column(
+                                  children: [
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("O+");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "O+",
+                                                color: Colors.white)),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    InkWell(
+                                      onTap:(){
+                                        setState(() {
+                                          bloodGroup.setText("O-");
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Center(
+                                            child: T1(
+                                                content: "O-",
+                                                color: Colors.white)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
+                        : AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap:(){
+                                          setState(() {
+                                            reasonForRequest.setText("Plasma");
+                                          });
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.all(5),
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Center(
+                                              child: T1(
+                                                  content: "Plasma",
+                                                  color: Colors.white)),
+                                        ),
+                                      ),
                                       SizedBox(height: 10),
-                                      Text(
-                                          "You're request is being processed"),
+                                      InkWell(
+                                        onTap:(){
+                                          setState(() {
+                                            reasonForRequest.setText("Whole Blood");
+                                          });
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.all(5),
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Center(
+                                              child: T1(
+                                                  content: "Whole",
+                                                  color: Colors.white)),
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      hospName.clear();
-                                      patientName.clear();
-                                      hospLocation.clear();
-                                      //TODO: navigate to activity
-
-                                    },
+                                Flexible(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap:(){
+                                          setState(() {
+                                            reasonForRequest.setText("Platelets");
+                                          });
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.all(5),
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Center(
+                                              child: T1(
+                                                  content: "Platelets",
+                                                  color: Colors.white)),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      InkWell(
+                                        onTap:(){
+                                          setState(() {
+                                            reasonForRequest.setText("RRCB");
+                                          });
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.all(5),
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Center(
+                                              child: T1(
+                                                  content: "RRBC",
+                                                  color: Colors.white)),
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                ],
-                              ));
-
-                    },
-                    child: T1(content: "Submit", color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                Flexible(
+                  flex: 4,
+                  child: RegisterTextField(
+                      content: "Patient Name", controller: patientName),
+                ),
+                Flexible(
+                    flex: 1,
+                    child: RegisterTextField(
+                        content: "Age", controller: patientAge)),
               ],
             ),
-          ),
+            RegisterTextField(content: "Hospital Name", controller: hospName),
+            //preview
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.red[100],
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    T1(content: "Preview", color: Colors.black),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: Colors.red[200],
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                T1(content: "Blood Group : ", color: Colors.white),
+                                T1(content: bloodGroup.text.toString(), color: Colors.white),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                T1(content: "Reason : ", color: Colors.white),
+                                T1(content: reasonForRequest.text.toString(), color: Colors.white),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                T1(content: "Patient Name : ", color: Colors.white),
+                                T1(content: patientName.text.toString(), color: Colors.white),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                T1(content: "Age : ", color: Colors.white),
+                                T1(content: patientAge.text.toString(), color: Colors.white),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                T1(content: "Hospital Name : ", color: Colors.white),
+                                T1(content: hospName.text.toString(), color: Colors.white),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: InkWell(
+                        onTap: () async{
+                          await FirebaseFirestore.instance
+                              .collection("request")
+                              .doc("${currentUser?.phoneNumber}")
+                              .set({
+                            "Patient Name": patientName.text.toString(),
+                            "Age": patientAge.text.toString(),
+                            "Hospital Name": hospName.text.toString(),
+                            "BloodGroup": bloodGroup.text.toString(),
+                            "Reason": reasonForRequest.text.toString(),
+                            "phone":currentUser?.phoneNumber.toString().substring(3),
+                          });
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(
+                              content: T1(
+                                content: "Request placed",
+                                color: Colors.redAccent,
+                              )));
+                          patientAge.clear();
+                          patientName.clear();
+                          hospName.clear();
+                          bloodGroup.clear();
+                          reasonForRequest.clear();
+                        },
+                        child: Center(
+                            child: T1(content: "Request", color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

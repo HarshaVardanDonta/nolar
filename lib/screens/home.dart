@@ -55,10 +55,12 @@ class _HomeState extends State<Home> {
         appBar: (currentUser?.displayName != null &&
                 currentUser?.phoneNumber != null)
             ? AppBar(
-                toolbarHeight: 70,
+                toolbarHeight: 60,
                 foregroundColor: Colors.black,
                 backgroundColor: Colors.white,
                 elevation: 0,
+                title: SizedBox(
+                    height: 20, child: Image.asset("assets/logo3.png")),
                 actions: [
                   selectedPage != 0
                       ? Padding(
@@ -309,6 +311,13 @@ class _HomeState extends State<Home> {
                             ],
                           ),
                           SizedBox(height: 20),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, "/register");
+                              },
+                              child: T1(
+                                  content: "Register as a donor",
+                                  color: Colors.red)),
                           Divider(thickness: 1),
                           //acheivments
                           T1(content: "Acheivements", color: Colors.redAccent),
@@ -355,21 +364,74 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Dash(),
-                  //register as a donor
-                  Register(),
-                  // request blood
-                  Request(),
-                  //  Notifications
-                  //TODO: implement notifications
+                  //messages
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        T1(content: "Messages", color: Colors.black),
-                        CustomMessage(),
-                        CustomMessage(),
-                        CustomMessage(),
+                        StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection("users")
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              print(snapshot.data!.docs.length);
+                              if (!snapshot.hasData) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else {
+                                print(snapshot.data!.docs[0]['phone']);
+                                return Container(
+                                  height: 400,
+                                  child: ListView.builder(
+                                      itemCount:100,
+                                      itemBuilder: (context, index) {
+                                        if(!snapshot.hasData){
+                                          return Center(child: CircularProgressIndicator());
+                                        }
+                                        if (snapshot.data!.docs[index]
+                                                ['phone']! ==
+                                            currentUser?.phoneNumber) {
+                                          return SizedBox(
+                                            height: 400,
+                                            child: ListView.builder(
+                                                itemCount: snapshot
+                                                    .data!
+                                                    .docs[index]['fromNumber']
+                                                    .length,
+                                                itemBuilder: (context, i) {
+                                                  return Container(
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ChatScreen(
+                                                                          grpId:
+                                                                              "${snapshot.data!.docs[index]['fromNumber'][i]}-${currentUser?.phoneNumber}",
+                                                                          to: "${snapshot.data!.docs[index]['fromNumber'][i]}",
+                                                                        )));
+                                                      },
+                                                      child: T1(
+                                                          content: snapshot
+                                                                  .data!
+                                                                  .docs[index]
+                                                              ['fromNumber'][i],
+                                                          color: Colors.black),
+                                                    ),
+                                                  );
+                                                }),
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
+
+                                      }),
+                                );
+                              }
+                            }),
                       ],
                     ),
                   ),
@@ -390,7 +452,7 @@ class _HomeState extends State<Home> {
                                       snapshot.data!.docs;
                                   return SizedBox(
                                     height: MediaQuery.of(context).size.height -
-                                        250,
+                                        200,
                                     child: ListView(
                                         children: documents
                                             .map((doc) => Card(
@@ -399,23 +461,14 @@ class _HomeState extends State<Home> {
                                                               .waiting
                                                       ? CircularProgressIndicator()
                                                       : ListTile(
-                                                          leading:
-                                                              // Image.network(
-                                                              //   "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${doc['phone']}?alt=media&token=15ccf0f7-514a-43fa-821e-310c09cfc826",
-                                                              //   frameBuilder: (context, child, frame, wasSynchronouslyLoaded){
-                                                              //   return child;
-                                                              // },
-                                                              //   loadingBuilder: (context, child, loadingProgress){
-                                                              //     if(loadingProgress == null){
-                                                              //       return child;
-                                                              //     }
-                                                              //     else{
-                                                              //       return Center(child: CircularProgressIndicator());
-                                                              //     }
-                                                              //   },
-                                                              // ),
-                                                              CircleAvatar(
-                                                            radius: 50,
+                                                          contentPadding:
+                                                              EdgeInsets.only(
+                                                                  left: 0.0,
+                                                                  right: 0.0,
+                                                                  top: 0,
+                                                                  bottom: 0),
+                                                          leading: CircleAvatar(
+                                                            radius: 25,
                                                             backgroundImage: doc ==
                                                                     ConnectionState
                                                                         .waiting
@@ -468,43 +521,31 @@ class _HomeState extends State<Home> {
                         },
                         icon: Icon(
                           Icons.home_filled,
-                          color: Colors.red,
+                          color: selectedPage == 1 ? Colors.red : Colors.white,
                           size: 30,
                         )),
-                    //Dashboard
-                    IconButton(
-                        onPressed: () {
-                          controller.animateToPage(2,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease);
-                        },
-                        icon: Icon(
-                          Icons.app_registration,
-                          color: Colors.red,
-                          size: 30,
-                        )),
-                    //request blood
-                    IconButton(
-                      icon: Image.asset("assets/RequestBlood.png"),
-                      onPressed: () {
-                        controller.animateToPage(3,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.ease);
-                      },
-                    ),
+
                     //  notifications
                     IconButton(
-                      icon: Image.asset("assets/Notifications.png"),
+                      icon: Icon(
+                        Icons.notifications,
+                        color: selectedPage == 2 ? Colors.red : Colors.white,
+                        size: 30,
+                      ),
                       onPressed: () {
-                        controller.animateToPage(4,
+                        controller.animateToPage(2,
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
                       },
                     ),
                     IconButton(
-                      icon: Image.asset("assets/Notifications.png"),
+                      icon: Icon(
+                        Icons.list,
+                        color: selectedPage == 3 ? Colors.red : Colors.white,
+                        size: 30,
+                      ),
                       onPressed: () {
-                        controller.animateToPage(5,
+                        controller.animateToPage(3,
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
                       },

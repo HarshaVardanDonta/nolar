@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
       title: 'nolar',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.red
+        primarySwatch: Colors.grey
       ),
       initialRoute: "/splash",
       routes: {
