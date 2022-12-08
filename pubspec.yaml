@@ -55,6 +55,7 @@ dependencies:
   card_swiper: ^2.0.4
   image_cropper: ^3.0.1
   firebase_in_app_messaging: ^0.7.0+7
+  encrypt: ^5.0.1
 
 dev_dependencies:
   flutter_test:

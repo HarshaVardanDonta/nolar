@@ -88,7 +88,6 @@ class RegisterTexxtField extends StatefulWidget {
 }
 
 class _RegisterTexxtFieldState extends State<RegisterTexxtField> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -216,13 +215,16 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: T1(content: widget.to, color: Colors.black),
+        backgroundColor: Colors.red[200],
+        elevation: 0,
+        foregroundColor: Colors.white,
+        title: T1(content: widget.to, color: Colors.white),
       ),
       body: Column(
         children: [
           Expanded(
               child: Container(
-            color: Colors.red,
+            color: Colors.red[200],
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: StreamBuilder(
@@ -257,27 +259,39 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Expanded(
                 child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                   controller: msg,
+                  style: GoogleFonts.poppins(
+                      textStyle: TextStyle(
+                          color: Colors.redAccent,
+                          letterSpacing: 1,
+                          fontWeight: FontWeight.w500)),
                   decoration: InputDecoration(
-                      hintText: "start writing",
-                      hintStyle: GoogleFonts.poppins(
-                          textStyle: TextStyle(
-                              color: Colors.redAccent,
-                              letterSpacing: 1,
-                              fontWeight: FontWeight.w500)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
-                          borderSide:
-                              BorderSide(color: Colors.redAccent, width: 1.5)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
-                          borderSide:
-                              BorderSide(color: Colors.redAccent, width: 2.5))),
+                    hintText: "start writing",
+                    hintStyle: GoogleFonts.poppins(
+                        textStyle: TextStyle(
+                            color: Colors.redAccent,
+                            letterSpacing: 1,
+                            fontWeight: FontWeight.w500)),
+                    contentPadding: EdgeInsets.all(8),
+                    // enabledBorder: OutlineInputBorder(
+                    //     borderRadius: BorderRadius.circular(0),
+                    //     borderSide:
+                    //         BorderSide(color: Colors.redAccent, width: 1.5)),
+                    // focusedBorder: OutlineInputBorder(
+                    //     borderRadius: BorderRadius.circular(0),
+                    //     borderSide:
+                    //         BorderSide(color: Colors.redAccent, width: 2.5)),
+                  ),
                 ),
               ),
+
+              //send button
               IconButton(
                   onPressed: () async {
                     if (msg.text.toString().trim() != '') {
+                      //write message
                       var documentReference = FirebaseFirestore.instance
                           .collection('messages')
                           .doc(widget.grpId)
@@ -300,32 +314,28 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                         msg.clear();
                       });
+
+                      // register message
                       await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(widget.to.toString())
+                          .collection("chatRooms")
+                          .doc(widget.grpId)
                           .set({
-                        "phone": widget.to,
-                        "hasMessages": true,
-                        "fromNumber": FieldValue.arrayUnion(
-                            [currentUser?.phoneNumber.toString()])
-                      } ,SetOptions(merge: true));
-                      // await FirebaseFirestore.instance
-                      //     .collection("users")
-                      //     .doc(widget.to.toString())
-                      //     .update({
-                      //   "fromNumber": FieldValue.arrayUnion(
-                      //       [currentUser?.phoneNumber.toString()])
-                      // }).catchError((error){
-                      //
-                      // });
+                        "roomID": widget.grpId,
+                        "numbers": FieldValue.arrayUnion([
+                          currentUser?.phoneNumber.toString(),
+                          widget.to.toString()
+                        ])
+                      }, SetOptions(merge: true));
+
                       _controller.animateTo(0.0,
                           duration: Duration(milliseconds: 900),
                           curve: Curves.easeOut);
-                    } else {
-                      // Fluttertoast.showToast(msg: 'Nothing to send');
                     }
                   },
-                  icon: Icon(Icons.send)),
+                  icon: Icon(
+                    Icons.send,
+                    color: Colors.red,
+                  )),
             ],
           ),
         ],
@@ -413,7 +423,14 @@ class _BubbleChatState extends State<BubbleChat> {
                     topRight: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16))),
-        child: T1(content: widget.content, color: Colors.red),
+        child: Flexible(child: Text( widget.content,
+          style: GoogleFonts.poppins(
+              textStyle: TextStyle(
+                  fontSize: 19,
+                  color: Colors.red,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w500)),
+        ),),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nolar/encrypt.dart';
 import 'package:nolar/w.dart';
 
 class Dash extends StatefulWidget {
@@ -21,34 +22,6 @@ class _DashState extends State<Dash> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          // SizedBox(
-          //   height: 200,
-          //   child: ListView(
-          //     scrollDirection: Axis.horizontal,
-          //     children: [
-          //       // InkWell(
-          //       //     onTap: () {
-          //       //       Navigator.push(
-          //       //           context,
-          //       //           MaterialPageRoute(
-          //       //               builder: (context) => ChatScreen(
-          //       //                     grpId: "grpId", to: '+911111111111',
-          //       //                   )));
-          //       //     },
-          //       //     child: NotificationCard(patientName: '',)),
-          //       // InkWell(
-          //       //   onTap: (){
-          //       //     Navigator.push(
-          //       //         context,
-          //       //         MaterialPageRoute(
-          //       //             builder: (context) => ChatScreen(
-          //       //               grpId: "grpId", to: '+919248030363',
-          //       //             )));
-          //       //   },
-          //       // )
-          //     ],
-          //   ),
-          // ),
           StreamBuilder(
               stream:
                   FirebaseFirestore.instance.collection("request").snapshots(),
@@ -64,13 +37,14 @@ class _DashState extends State<Dash> {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           return InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              EncryptData.encryptAES("${currentUser?.phoneNumber}+91${snapshot.data!.docs[index]['phone']}");
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatScreen(
                                             grpId:
-                                                "${currentUser?.phoneNumber}-+91${snapshot.data!.docs[index]['phone']}",
+                                            EncryptData.encryptAES("${currentUser?.phoneNumber}+91${snapshot.data!.docs[index]['phone']}").toString(),
                                             to: "+91${snapshot.data!.docs[index]['phone']}",
                                           )));
                             },

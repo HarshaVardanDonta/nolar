@@ -372,62 +372,92 @@ class _HomeState extends State<Home> {
                       children: [
                         StreamBuilder(
                             stream: FirebaseFirestore.instance
-                                .collection("users")
+                                .collection("chatRooms")
                                 .snapshots(),
                             builder: (context, snapshot) {
-                              print(snapshot.data!.docs.length);
+                              print(snapshot.data!.docs[0]['numbers'][0]);
                               if (!snapshot.hasData) {
                                 return Center(
                                     child: CircularProgressIndicator());
                               } else {
-                                print(snapshot.data!.docs[0]['phone']);
-                                return Container(
-                                  height: 400,
+                                return Flexible(
+                                  flex: 1,
                                   child: ListView.builder(
-                                      itemCount:100,
+                                      itemCount: snapshot.data!.docs.length,
                                       itemBuilder: (context, index) {
                                         if(!snapshot.hasData){
                                           return Center(child: CircularProgressIndicator());
                                         }
                                         if (snapshot.data!.docs[index]
-                                                ['phone']! ==
-                                            currentUser?.phoneNumber) {
-                                          return SizedBox(
-                                            height: 400,
-                                            child: ListView.builder(
-                                                itemCount: snapshot
-                                                    .data!
-                                                    .docs[index]['fromNumber']
-                                                    .length,
-                                                itemBuilder: (context, i) {
-                                                  return Container(
-                                                    child: InkWell(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        ChatScreen(
-                                                                          grpId:
-                                                                              "${snapshot.data!.docs[index]['fromNumber'][i]}-${currentUser?.phoneNumber}",
-                                                                          to: "${snapshot.data!.docs[index]['fromNumber'][i]}",
-                                                                        )));
-                                                      },
-                                                      child: T1(
-                                                          content: snapshot
-                                                                  .data!
-                                                                  .docs[index]
-                                                              ['fromNumber'][i],
-                                                          color: Colors.black),
-                                                    ),
-                                                  );
-                                                }),
+                                                    ['numbers'][0] ==
+                                                currentUser?.phoneNumber
+                                                    .toString() ||
+                                            snapshot.data!.docs[index]
+                                                    ['numbers'][1] ==
+                                                currentUser?.phoneNumber
+                                                    .toString()) {
+                                          return InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ChatScreen(
+                                                            grpId: snapshot
+                                                                .data!
+                                                                .docs[index]
+                                                                    ['roomID']
+                                                                .toString(),
+                                                            to: (snapshot.data!.docs[index]
+                                                                            [
+                                                                            'numbers']
+                                                                        [0] ==
+                                                                    currentUser
+                                                                        ?.phoneNumber)
+                                                                ? "${snapshot.data!.docs[index]['numbers'][1]}"
+                                                                : "${snapshot.data!.docs[index]['numbers'][0]}",
+                                                          )));
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.all(20),
+                                              margin: EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.red[100],
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 25,
+                                                    backgroundImage: snapshot ==
+                                                            ConnectionState
+                                                                .waiting
+                                                        ? NetworkImage(
+                                                            "https://via.placeholder.com/150x150.png?text=user")
+                                                        : NetworkImage(
+                                                            "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${(snapshot.data!.docs[index]['numbers'][0] == currentUser?.phoneNumber) ? snapshot.data!.docs[index]['numbers'][1].toString().substring(3) : snapshot.data!.docs[index]['numbers'][0].toString().substring(3)}?alt=media&token=f99d3d0e-bc27-4cc3-862f-0d3c667fa6a6"),
+                                                  ),
+                                                  SizedBox(width: 20),
+                                                  T1(
+                                                      content: (snapshot.data!.docs[
+                                                                          index]
+                                                                      [
+                                                                      'numbers']
+                                                                  [0] ==
+                                                              currentUser
+                                                                  ?.phoneNumber)
+                                                          ? "${snapshot.data!.docs[index]['numbers'][1]}"
+                                                          : "${snapshot.data!.docs[index]['numbers'][0]}",
+                                                      color: Colors.black),
+                                                ],
+                                              ),
+                                            ),
                                           );
-                                        } else {
+                                        }
+                                        else {
                                           return Container();
                                         }
-
                                       }),
                                 );
                               }
