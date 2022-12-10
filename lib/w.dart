@@ -49,7 +49,7 @@ class _T2State extends State<T2> {
       overflow: TextOverflow.ellipsis,
       style: GoogleFonts.poppins(
           textStyle: TextStyle(
-              fontSize: 15,
+              fontSize: 12,
               color: widget.color,
               letterSpacing: 1,
               fontWeight: FontWeight.w500)),
@@ -238,8 +238,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());
                   } else {
-                    var listMessage = snapshot.data?.docs;
-                    print(listMessage);
                     return ListView.builder(
                       controller: _controller,
                       itemCount: snapshot.data?.docs.length,
@@ -349,12 +347,17 @@ class NotificationCard extends StatefulWidget {
   String hospName;
   String bloodGroup;
   String reason;
+  Function() tap;
+  Function() share;
   NotificationCard(
       {Key? key,
       required this.patientName,
       required this.hospName,
       required this.reason,
-      required this.bloodGroup})
+      required this.bloodGroup,
+      required this.tap,
+      required this.share,
+      })
       : super(key: key);
 
   @override
@@ -365,24 +368,59 @@ class _NotificationCardState extends State<NotificationCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 200,
       width: 250,
       margin: EdgeInsets.all(10),
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          color: Colors.red[100], borderRadius: BorderRadius.circular(16)),
+      padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+          color: Colors.grey,
+          blurRadius: 10.0,
+        ),
+      ], color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              T2(content: "Patient Name :", color: Colors.white),
+              T2(content: "Patient Name :", color: Colors.black),
               T2(content: widget.patientName, color: Colors.red),
-              T2(content: "Hospital :", color: Colors.white),
+              T2(content: "Hospital :", color: Colors.black),
               T2(content: widget.hospName, color: Colors.red),
-              T2(content: "Type :", color: Colors.white),
+              T2(content: "Blood Group :", color: Colors.black),
               T2(content: widget.bloodGroup, color: Colors.red),
+              T2(content: "Reason :", color: Colors.black),
               T2(content: widget.reason, color: Colors.red)
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
+                splashColor: Colors.red,
+                onTap: widget.tap,
+                child: Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 8.0,
+                        ),
+                      ],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Image.asset("assets/requestAccept.png"),
+                ),
+              ),
+              IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  onPressed: widget.share,
+                  icon: Image.asset('assets/share.png'))
             ],
           )
         ],
@@ -423,14 +461,15 @@ class _BubbleChatState extends State<BubbleChat> {
                     topRight: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16))),
-        child: Flexible(child: Text( widget.content,
+        child: Text(
+          widget.content,
           style: GoogleFonts.poppins(
               textStyle: TextStyle(
                   fontSize: 19,
                   color: Colors.red,
                   letterSpacing: 1,
                   fontWeight: FontWeight.w500)),
-        ),),
+        ),
       ),
     );
   }

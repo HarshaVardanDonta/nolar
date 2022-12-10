@@ -171,7 +171,7 @@ class _RequestState extends State<Request> {
                                 Column(
                                   children: [
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("A+");
                                         });
@@ -182,7 +182,8 @@ class _RequestState extends State<Request> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -192,7 +193,7 @@ class _RequestState extends State<Request> {
                                     ),
                                     SizedBox(height: 10),
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("A-");
                                         });
@@ -203,7 +204,8 @@ class _RequestState extends State<Request> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -217,7 +219,7 @@ class _RequestState extends State<Request> {
                                 Column(
                                   children: [
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("AB+");
                                         });
@@ -228,7 +230,8 @@ class _RequestState extends State<Request> {
                                         width: 50,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -238,7 +241,7 @@ class _RequestState extends State<Request> {
                                     ),
                                     SizedBox(height: 10),
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("AB-");
                                         });
@@ -249,7 +252,8 @@ class _RequestState extends State<Request> {
                                         width: 50,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -263,7 +267,7 @@ class _RequestState extends State<Request> {
                                 Column(
                                   children: [
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("B+");
                                         });
@@ -274,7 +278,8 @@ class _RequestState extends State<Request> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -284,7 +289,7 @@ class _RequestState extends State<Request> {
                                     ),
                                     SizedBox(height: 10),
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("B-");
                                         });
@@ -295,7 +300,8 @@ class _RequestState extends State<Request> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -309,7 +315,7 @@ class _RequestState extends State<Request> {
                                 Column(
                                   children: [
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("O+");
                                         });
@@ -320,7 +326,8 @@ class _RequestState extends State<Request> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -330,7 +337,7 @@ class _RequestState extends State<Request> {
                                     ),
                                     SizedBox(height: 10),
                                     InkWell(
-                                      onTap:(){
+                                      onTap: () {
                                         setState(() {
                                           bloodGroup.setText("O-");
                                         });
@@ -341,7 +348,8 @@ class _RequestState extends State<Request> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
                                         child: Center(
                                             child: T1(
@@ -363,7 +371,7 @@ class _RequestState extends State<Request> {
                                   child: Column(
                                     children: [
                                       InkWell(
-                                        onTap:(){
+                                        onTap: () {
                                           setState(() {
                                             reasonForRequest.setText("Plasma");
                                           });
@@ -373,7 +381,8 @@ class _RequestState extends State<Request> {
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: Colors.red,
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                           ),
                                           child: Center(
                                               child: T1(
@@ -383,9 +392,10 @@ class _RequestState extends State<Request> {
                                       ),
                                       SizedBox(height: 10),
                                       InkWell(
-                                        onTap:(){
+                                        onTap: () {
                                           setState(() {
-                                            reasonForRequest.setText("Whole Blood");
+                                            reasonForRequest
+                                                .setText("Whole Blood");
                                           });
                                         },
                                         child: Container(
@@ -393,7 +403,8 @@ class _RequestState extends State<Request> {
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: Colors.red,
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                           ),
                                           child: Center(
                                               child: T1(
@@ -409,9 +420,10 @@ class _RequestState extends State<Request> {
                                   child: Column(
                                     children: [
                                       InkWell(
-                                        onTap:(){
+                                        onTap: () {
                                           setState(() {
-                                            reasonForRequest.setText("Platelets");
+                                            reasonForRequest
+                                                .setText("Platelets");
                                           });
                                         },
                                         child: Container(
@@ -419,7 +431,8 @@ class _RequestState extends State<Request> {
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: Colors.red,
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                           ),
                                           child: Center(
                                               child: T1(
@@ -429,7 +442,7 @@ class _RequestState extends State<Request> {
                                       ),
                                       SizedBox(height: 10),
                                       InkWell(
-                                        onTap:(){
+                                        onTap: () {
                                           setState(() {
                                             reasonForRequest.setText("RRCB");
                                           });
@@ -439,7 +452,8 @@ class _RequestState extends State<Request> {
                                           height: 40,
                                           decoration: BoxDecoration(
                                             color: Colors.red,
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                           ),
                                           child: Center(
                                               child: T1(
@@ -494,32 +508,48 @@ class _RequestState extends State<Request> {
                           children: [
                             Row(
                               children: [
-                                T1(content: "Blood Group : ", color: Colors.white),
-                                T1(content: bloodGroup.text.toString(), color: Colors.white),
+                                T1(
+                                    content: "Blood Group : ",
+                                    color: Colors.white),
+                                T1(
+                                    content: bloodGroup.text.toString(),
+                                    color: Colors.white),
                               ],
                             ),
                             Row(
                               children: [
                                 T1(content: "Reason : ", color: Colors.white),
-                                T1(content: reasonForRequest.text.toString(), color: Colors.white),
+                                T1(
+                                    content: reasonForRequest.text.toString(),
+                                    color: Colors.white),
                               ],
                             ),
                             Row(
                               children: [
-                                T1(content: "Patient Name : ", color: Colors.white),
-                                T1(content: patientName.text.toString(), color: Colors.white),
+                                T1(
+                                    content: "Patient Name : ",
+                                    color: Colors.white),
+                                T1(
+                                    content: patientName.text.toString(),
+                                    color: Colors.white),
                               ],
                             ),
                             Row(
                               children: [
                                 T1(content: "Age : ", color: Colors.white),
-                                T1(content: patientAge.text.toString(), color: Colors.white),
+                                T1(
+                                    content: patientAge.text.toString(),
+                                    color: Colors.white),
                               ],
                             ),
                             Row(
                               children: [
-                                T1(content: "Hospital Name : ", color: Colors.white),
-                                T1(content: hospName.text.toString(), color: Colors.white),
+                                T1(
+                                    content: "Hospital Name : ",
+                                    color: Colors.white),
+                                T1(
+                                    content: hospName.text.toString(),
+                                    color: Colors.white),
                               ],
                             ),
                           ],
@@ -534,29 +564,44 @@ class _RequestState extends State<Request> {
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(20)),
                       child: InkWell(
-                        onTap: () async{
-                          await FirebaseFirestore.instance
-                              .collection("request")
-                              .doc("${currentUser?.phoneNumber}")
-                              .set({
-                            "Patient Name": patientName.text.toString(),
-                            "Age": patientAge.text.toString(),
-                            "Hospital Name": hospName.text.toString(),
-                            "BloodGroup": bloodGroup.text.toString(),
-                            "Reason": reasonForRequest.text.toString(),
-                            "phone":currentUser?.phoneNumber.toString().substring(3),
-                          });
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(
-                              content: T1(
-                                content: "Request placed",
-                                color: Colors.redAccent,
-                              )));
-                          patientAge.clear();
-                          patientName.clear();
-                          hospName.clear();
-                          bloodGroup.clear();
-                          reasonForRequest.clear();
+                        onTap: () async {
+                          if (patientName.text != '' &&
+                              patientAge.text != '' &&
+                              hospName.text != '' &&
+                              bloodGroup.text != '' &&
+                              reasonForRequest.text != '') {
+                            await FirebaseFirestore.instance
+                                .collection("request")
+                                .doc("${currentUser?.phoneNumber}")
+                                .set({
+                              "Patient Name": patientName.text.toString(),
+                              "Age": patientAge.text.toString(),
+                              "Hospital Name": hospName.text.toString(),
+                              "BloodGroup": bloodGroup.text.toString(),
+                              "Reason": reasonForRequest.text.toString(),
+                              "phone": currentUser?.phoneNumber
+                                  .toString()
+                                  .substring(3),
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: T1(
+                              content: "Request placed",
+                              color: Colors.redAccent,
+                            )));
+                            patientAge.clear();
+                            patientName.clear();
+                            hospName.clear();
+                            bloodGroup.clear();
+                            reasonForRequest.clear();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                duration: Duration(milliseconds: 300),
+                                content: T1(
+                                  content: "Fill all details",
+                                  color: Colors.redAccent,
+                                )));
+                          }
                         },
                         child: Center(
                             child: T1(content: "Request", color: Colors.white)),

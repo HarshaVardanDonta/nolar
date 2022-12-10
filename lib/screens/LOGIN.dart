@@ -209,6 +209,8 @@ class _LoginState extends State<Login> {
                                                         credentials);
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(SnackBar(
+                                                    behavior: SnackBarBehavior.floating,
+                                                    duration: Duration(milliseconds: 500),
                                                         content: T1(
                                                   content: "Login success",
                                                   color: Colors.redAccent,
@@ -223,6 +225,8 @@ class _LoginState extends State<Login> {
                                                 print(e.toString());
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(SnackBar(
+                                                    behavior: SnackBarBehavior.floating,
+                                                    duration: Duration(milliseconds: 300),
                                                         content: T1(
                                                   content:
                                                       "wrong otp please try again",

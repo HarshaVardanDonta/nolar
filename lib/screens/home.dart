@@ -33,16 +33,12 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     String? picUrl = currentUser?.photoURL.toString();
-    print(picUrl);
     Home.dispName = "";
 
     currentUser?.displayName != null
         ? Home.dispName = currentUser?.displayName
         : Home.dispName = currentUser?.phoneNumber;
     FirebaseFirestore db = FirebaseFirestore.instance;
-    print(currentUser?.displayName);
-    print(currentUser?.providerData);
-    print(currentUser?.photoURL);
 
     refresh() {
       setState(() {
@@ -56,7 +52,7 @@ class _HomeState extends State<Home> {
                 currentUser?.phoneNumber != null)
             ? AppBar(
                 toolbarHeight: 60,
-                foregroundColor: Colors.black,
+                foregroundColor: Colors.red,
                 backgroundColor: Colors.white,
                 elevation: 0,
                 title: SizedBox(
@@ -247,6 +243,7 @@ class _HomeState extends State<Home> {
                                   // await currentUser?.updatePhotoURL();
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(SnackBar(
+                                      behavior: SnackBarBehavior.floating,
                                           content: T1(
                                     content: "Image update success",
                                     color: Colors.redAccent,
@@ -375,7 +372,6 @@ class _HomeState extends State<Home> {
                                 .collection("chatRooms")
                                 .snapshots(),
                             builder: (context, snapshot) {
-                              print(snapshot.data!.docs[0]['numbers'][0]);
                               if (!snapshot.hasData) {
                                 return Center(
                                     child: CircularProgressIndicator());
