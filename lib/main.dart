@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nolar/screens/LOGIN.dart';
+import 'package:nolar/screens/allReq.dart';
 import 'package:nolar/screens/home.dart';
 import 'package:nolar/screens/otpval.dart';
 import 'package:nolar/screens/register.dart';
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
         '/otpVal': (context) => const OtpVal(),
         '/home': (context) => const Home(),
         '/request': (context) => const Request(),
+        '/allrequest': (context) => const AllReq(),
         '/register': (context) => const Register(),
       },
     );

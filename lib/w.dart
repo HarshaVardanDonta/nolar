@@ -20,6 +20,7 @@ class _T1State extends State<T1> {
   Widget build(BuildContext context) {
     return Text(
       widget.content,
+      maxLines: 5,
       overflow: TextOverflow.ellipsis,
       style: GoogleFonts.poppins(
           textStyle: TextStyle(
@@ -46,6 +47,7 @@ class _T2State extends State<T2> {
   Widget build(BuildContext context) {
     return Text(
       widget.content,
+      maxLines: 3,
       overflow: TextOverflow.ellipsis,
       style: GoogleFonts.poppins(
           textStyle: TextStyle(
@@ -130,6 +132,7 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
+        style: TextStyle(color: Colors.redAccent),
         controller: widget.controller,
         decoration: InputDecoration(
             labelText: widget.content,
@@ -168,30 +171,6 @@ class _CustomMessageState extends State<CustomMessage> {
             image: AssetImage("assets/MessageTemplate.png"),
             fit: BoxFit.fitWidth),
       ),
-    );
-  }
-}
-
-class InfoCard extends StatefulWidget {
-  dynamic content;
-  InfoCard({Key? key, required this.content}) : super(key: key);
-
-  @override
-  State<InfoCard> createState() => _InfoCardState();
-}
-
-class _InfoCardState extends State<InfoCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.fromLTRB(30, 150, 30, 150),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: widget.content,
     );
   }
 }
@@ -349,16 +328,17 @@ class NotificationCard extends StatefulWidget {
   String reason;
   Function() tap;
   Function() share;
-  NotificationCard(
-      {Key? key,
-      required this.patientName,
-      required this.hospName,
-      required this.reason,
-      required this.bloodGroup,
-      required this.tap,
-      required this.share,
-      })
-      : super(key: key);
+  bool isUrgent;
+  NotificationCard({
+    Key? key,
+    required this.patientName,
+    required this.hospName,
+    required this.reason,
+    required this.bloodGroup,
+    required this.tap,
+    required this.share,
+    required this.isUrgent,
+  }) : super(key: key);
 
   @override
   State<NotificationCard> createState() => _NotificationCardState();
@@ -368,62 +348,73 @@ class _NotificationCardState extends State<NotificationCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
-      width: 250,
-      margin: EdgeInsets.all(10),
-      padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-          color: Colors.grey,
-          blurRadius: 10.0,
-        ),
-      ], color: Colors.white, borderRadius: BorderRadius.circular(16)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              T2(content: "Patient Name :", color: Colors.black),
-              T2(content: widget.patientName, color: Colors.red),
-              T2(content: "Hospital :", color: Colors.black),
-              T2(content: widget.hospName, color: Colors.red),
-              T2(content: "Blood Group :", color: Colors.black),
-              T2(content: widget.bloodGroup, color: Colors.red),
-              T2(content: "Reason :", color: Colors.black),
-              T2(content: widget.reason, color: Colors.red)
-            ],
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 250),
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+        decoration: BoxDecoration(boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            blurRadius: 10.0,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                splashColor: Colors.red,
-                onTap: widget.tap,
-                child: Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 8.0,
-                        ),
-                      ],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Image.asset("assets/requestAccept.png"),
+        ], color: Colors.white, borderRadius: BorderRadius.circular(16)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                T2(content: "Patient Name :", color: Colors.black),
+                T2(content: widget.patientName, color: Colors.red),
+                T2(content: "Hospital :", color: Colors.black),
+                SizedBox(
+                    width: 200,
+                    child: T2(content: widget.hospName, color: Colors.red)),
+                T2(content: "Blood Requirement :", color: Colors.black),
+                T2(
+                    content: "${widget.bloodGroup}, ${widget.reason}",
+                    color: Colors.red),
+                Row(
+                  children: [
+                    T2(content: "Is Urgent: ", color: Colors.black),
+                    T2(content: widget.isUrgent.toString(), color: Colors.red),
+                  ],
                 ),
-              ),
-              IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  onPressed: widget.share,
-                  icon: Image.asset('assets/share.png'))
-            ],
-          )
-        ],
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  splashColor: Colors.red,
+                  onTap: widget.tap,
+                  child: Container(
+                    height: 30,
+                    // padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 8.0,
+                          ),
+                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Image.asset("assets/requestAccept.png"),
+                  ),
+                ),
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    onPressed: widget.share,
+                    icon: Image.asset('assets/share.png'))
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -469,6 +460,45 @@ class _BubbleChatState extends State<BubbleChat> {
                   color: Colors.red,
                   letterSpacing: 1,
                   fontWeight: FontWeight.w500)),
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileButton extends StatefulWidget {
+  String content;
+  IconData icon;
+  Function() tap;
+  ProfileButton(
+      {Key? key, required this.content, required this.icon, required this.tap})
+      : super(key: key);
+
+  @override
+  State<ProfileButton> createState() => _ProfileButtonState();
+}
+
+class _ProfileButtonState extends State<ProfileButton> {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      splashColor: Colors.red,
+      onTap: widget.tap,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(20)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              widget.icon,
+              color: Colors.redAccent,
+            ),
+            SizedBox(width: 10),
+            T1(content: widget.content, color: Colors.redAccent),
+          ],
         ),
       ),
     );

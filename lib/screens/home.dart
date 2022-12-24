@@ -105,7 +105,7 @@ class _HomeState extends State<Home> {
               margin: EdgeInsets.all(10),
               // padding: EdgeInsets.all(10),
               width: MediaQuery.of(context).size.width * 0.6,
-              height: 450,
+              height: 490,
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
@@ -142,7 +142,11 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  DrawerButton(
+                      content: 'Register',
+                      fun: () {
+                        Navigator.pushNamed(context, "/register");
+                      }),
                   DrawerButton(
                     content: "About US",
                     fun: () {},
@@ -190,174 +194,101 @@ class _HomeState extends State<Home> {
                 children: [
                   //profile
                   SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Stack(children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: Image.network(
-                                picUrl,
-                                height: 150,
-                                width: 150,
-                                fit: BoxFit.cover,
-                                frameBuilder: (context, child, frame,
-                                    wasSynchronouslyLoaded) {
+                    child: Column(
+                      children: [
+                        Stack(children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(
+                              picUrl,
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                              frameBuilder: (context, child, frame,
+                                  wasSynchronouslyLoaded) {
+                                return child;
+                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
                                   return child;
-                                },
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  } else {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  }
-                                },
-                              ),
+                                } else {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                }
+                              },
                             ),
-                            Positioned(
-                              left: 100,
-                              top: 100,
-                              child: GestureDetector(
-                                //edit display image
-                                onTap: () async {
-                                  final ImagePicker _picker = ImagePicker();
-                                  final image = await _picker.pickImage(
-                                      source: ImageSource.gallery,
-                                      imageQuality: 30);
-                                  final path = image?.path;
-                                  setState(() {
-                                    file = File(path!);
-                                  });
+                          ),
+                          Positioned(
+                            left: 100,
+                            top: 100,
+                            child: GestureDetector(
+                              //edit display image
+                              onTap: () async {
+                                final ImagePicker _picker = ImagePicker();
+                                final image = await _picker.pickImage(
+                                    source: ImageSource.gallery,
+                                    imageQuality: 30);
+                                final path = image?.path;
+                                setState(() {
+                                  file = File(path!);
+                                });
 
-                                  final storageRef = FirebaseStorage.instance
-                                      .ref()
-                                      .child(
-                                          "profilePics/${currentUser?.phoneNumber}");
-                                  await storageRef.putFile(file!);
-                                  final imageUrl =
-                                      await storageRef.getDownloadURL();
-                                  await currentUser?.updatePhotoURL(imageUrl);
-                                  // await currentUser?.updatePhotoURL();
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                      behavior: SnackBarBehavior.floating,
-                                          content: T1(
-                                    content: "Image update success",
-                                    color: Colors.redAccent,
-                                  )));
-                                  setState(() {});
-                                },
-                                child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[300],
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.edit,
-                                    ),
+                                final storageRef = FirebaseStorage.instance
+                                    .ref()
+                                    .child(
+                                        "profilePics/${currentUser?.phoneNumber}");
+                                await storageRef.putFile(file!);
+                                final imageUrl =
+                                    await storageRef.getDownloadURL();
+                                await currentUser?.updatePhotoURL(imageUrl);
+                                // await currentUser?.updatePhotoURL();
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                        behavior: SnackBarBehavior.floating,
+                                        content: T1(
+                                          content: "Image update success",
+                                          color: Colors.redAccent,
+                                        )));
+                                setState(() {});
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.edit,
                                   ),
                                 ),
                               ),
                             ),
-                          ]),
-                          SizedBox(height: 20),
-                          Divider(thickness: 1),
-                          SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          ),
+                        ]),
+                        SizedBox(height: 20),
+                        T1(
+                            content: "${currentUser?.displayName}",
+                            color: Colors.redAccent),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          margin: EdgeInsets.all(10),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: Colors.red[100],
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              T1(content: "Name: ", color: Colors.redAccent),
-                              SizedBox(
-                                width: 250,
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: T1(
-                                      content: "${currentUser?.displayName}",
-                                      color: Colors.redAccent),
-                                ),
-                              ),
+                              ProfileButton(content: "Manage Account", icon: Icons.person, tap: () {  },),
+                              ProfileButton(content: "Your Donations", icon: Icons.list, tap: () {  },),
+                              ProfileButton(content: "Certificates", icon: Icons.newspaper_outlined, tap: () {  },),
+                              ProfileButton(content: "Settings", icon: Icons.settings, tap: () {  },),
+
                             ],
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              T1(content: "Phone: ", color: Colors.redAccent),
-                              T1(
-                                  content: "${currentUser?.phoneNumber}",
-                                  color: Colors.redAccent),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              T1(content: "Email: ", color: Colors.redAccent),
-                              SizedBox(
-                                width: 300,
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: T1(
-                                      content: "${currentUser?.email}",
-                                      color: Colors.redAccent),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, "/register");
-                              },
-                              child: T1(
-                                  content: "Register as a donor",
-                                  color: Colors.red)),
-                          Divider(thickness: 1),
-                          //acheivments
-                          T1(content: "Acheivements", color: Colors.redAccent),
-                          SizedBox(height: 20),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            margin: EdgeInsets.all(10),
-                            height: 150,
-                            child: ShaderMask(
-                              shaderCallback: (Rect rect) {
-                                return LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    Colors.purple,
-                                    Colors.transparent,
-                                    Colors.transparent,
-                                    Colors.purple
-                                  ],
-                                  stops: [
-                                    0.0,
-                                    0.02,
-                                    0.98,
-                                    1.0
-                                  ], // 10% purple, 80% transparent, 10% purple
-                                ).createShader(rect);
-                              },
-                              blendMode: BlendMode.dstOut,
-                              child: GridView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: 10,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 20,
-                                          mainAxisSpacing: 40),
-                                  itemBuilder: (context, index) {
-                                    return CircleAvatar();
-                                  }),
-                            ),
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   Dash(),
@@ -381,8 +312,10 @@ class _HomeState extends State<Home> {
                                   child: ListView.builder(
                                       itemCount: snapshot.data!.docs.length,
                                       itemBuilder: (context, index) {
-                                        if(!snapshot.hasData){
-                                          return Center(child: CircularProgressIndicator());
+                                        if (!snapshot.hasData) {
+                                          return Center(
+                                              child:
+                                                  CircularProgressIndicator());
                                         }
                                         if (snapshot.data!.docs[index]
                                                     ['numbers'][0] ==
@@ -450,8 +383,7 @@ class _HomeState extends State<Home> {
                                               ),
                                             ),
                                           );
-                                        }
-                                        else {
+                                        } else {
                                           return Container();
                                         }
                                       }),
