@@ -30,6 +30,7 @@ class _AllReqState extends State<AllReq> {
             StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection("request")
+                    .orderBy('timeStamp',descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -155,9 +156,9 @@ class _AllReqState extends State<AllReq> {
                                             text:
                                                 "${snapshot.data!.docs[index]['Patient Name']} requires blood at ${snapshot.data!.docs[index]['Hospital Name']} - ${snapshot.data!.docs[index]['Hospital Address']}",
                                             subject: "Nolar");
-                                      },
-                                      isUrgent: snapshot.data!.docs[index]
-                                          ['Urgent'],
+                                      }, isUrgent: snapshot.data!.docs[index]
+                                    ['isUrgent'],
+                                      
                                     );
                                   }),
                             ),

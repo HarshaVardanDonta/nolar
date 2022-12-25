@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nolar/screens/infoUpdate.dart';
 import 'package:nolar/screens/register.dart';
@@ -13,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../w.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:http/http.dart' as http ;
 
 import 'dash,dart.dart';
 
@@ -25,11 +29,82 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
   var controller = PageController(initialPage: 1);
   User? currentUser = FirebaseAuth.instance.currentUser;
 
   int selectedPage = 1;
   File? file;
+  String deviceToken='';
+  @override
+  void initState(){
+    super.initState();
+    getTokern();
+    initInfo();
+  }
+  initInfo()async{
+    var androidSettings = AndroidInitializationSettings("@mipmap/ic_launcher");
+    var ios = DarwinInitializationSettings();
+    var settings = InitializationSettings(android: androidSettings, iOS: ios);
+    flutterLocalNotificationsPlugin.initialize(
+        settings,
+        onDidReceiveNotificationResponse: (response) async {
+          setState(() {
+            selectedPage = 2;
+            controller.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.ease);
+          });
+    },
+    onDidReceiveBackgroundNotificationResponse: (response) async {
+      print(response);
+    }
+    );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async{
+      print('......................on message.......................');
+      print('${message.notification!.title} and ${message.notification!.body}');
+      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+        '${message.notification!.body}',
+        htmlFormatBigText: true,
+        contentTitle: '${message.notification!.title}',
+        htmlFormatContentTitle: true,
+        // summaryText: 'Chat',
+        htmlFormatSummaryText: true,
+      );
+      AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
+        'channel id',
+        'channel name',
+        importance: Importance.max,
+        priority: Priority.high,
+        styleInformation: bigTextStyleInformation,
+        playSound: true,
+        icon: '@mipmap/ic_launcher',
+      );
+      DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
+      NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails,iOS:iosDetails );
+      await flutterLocalNotificationsPlugin.show(
+          0,
+          '${message.notification!.title}',
+          '${message.notification!.body}',
+          notificationDetails,
+          payload: message.data['body']
+      );
+
+    });
+
+  }
+  getTokern()async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    String? token = await messaging.getToken();
+    saveToken(token!);
+  }
+  saveToken(String token)async{
+    await FirebaseFirestore.instance.collection("userTokens").doc(currentUser!.phoneNumber).set({
+      "token":token
+    },SetOptions(merge: true));
+  }
+
+
   @override
   Widget build(BuildContext context) {
     String? picUrl = currentUser?.photoURL.toString();
@@ -301,6 +376,7 @@ class _HomeState extends State<Home> {
                         StreamBuilder(
                             stream: FirebaseFirestore.instance
                                 .collection("chatRooms")
+                                .orderBy("timestamp",descending: true)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {

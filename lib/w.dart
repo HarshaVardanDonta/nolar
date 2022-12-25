@@ -1,9 +1,14 @@
 // ignore_for_file: prefer_const_constructors, must_be_immutable
 
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+
 
 class T1 extends StatefulWidget {
   String content;
@@ -186,10 +191,48 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
+sendPushMEssage(String token, String title, String body)async{
+  try {
+    await http.post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': "key=AAAAJMxDZec:APA91bHnwDneGJs_xg_xO9jVl-ZxrVjT22EOvvcEHTAL0zh01GywTzZhGitF7JFJG5P66v1-XF17MgPPFdfVdUHc85L4aOhYkMAA2B4p2-1AJIsa596YIWn6dTeKJ7vw_mJWk6Rszbde",
+      },
+      body: jsonEncode(<String, dynamic>{
+        'notification': <String, dynamic>{
+          'body': body,
+          'title': title,
+          'android_channel_id': 'channel id',
+        },
+        'priority': 'high',
+        'data': <String, dynamic>{
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'status': 'done',
+          'body': body,
+          'title': title,
+        },
+        'to': token,
+      }),
+    );
+    print(token);
+    print("sent");
+  }catch(e){
+    print(e);
+  }
+}
+
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController msg = TextEditingController();
   final ScrollController _controller = ScrollController();
   User? currentUser = FirebaseAuth.instance.currentUser;
+  String token = "";
+  String username ='';
+  @override
+  void initState(){
+    super.initState();
+    username = currentUser!.phoneNumber!;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,26 +251,37 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
-                    .collection("messages")
-                    .doc(widget.grpId)
-                    .collection(widget.grpId)
-                    .orderBy('timestamp', descending: true)
+                    .collection("userTokens").doc(widget.to)
                     .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {
-                    return ListView.builder(
-                      controller: _controller,
-                      itemCount: snapshot.data?.docs.length,
-                      reverse: true,
-                      itemBuilder: (context, index) => BubbleChat(
-                          content:
+                builder: (context, tokenSnap){
+                  // print(widget.to);
+                  token = tokenSnap.data!["token"];
+                  print(token);
+                  // print("token snap shot is ${tokenSnap.data!["token"]}");
+                  return StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("messages")
+                        .doc(widget.grpId)
+                        .collection(widget.grpId)
+                        .orderBy('timestamp', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        return ListView.builder(
+                          controller: _controller,
+                          itemCount: snapshot.data?.docs.length,
+                          reverse: true,
+                          itemBuilder: (context, index) => BubbleChat(
+                              content:
                               snapshot.data!.docs[index]['content'].toString(),
-                          from:
+                              from:
                               snapshot.data!.docs[index]['idFrom'].toString()),
-                    );
-                  }
+                        );
+                      }
+                    },
+                  );
                 },
               ),
             ),
@@ -245,7 +299,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           letterSpacing: 1,
                           fontWeight: FontWeight.w500)),
                   decoration: InputDecoration(
-                    hintText: "start writing",
+                    hintText: "Start writing",
                     hintStyle: GoogleFonts.poppins(
                         textStyle: TextStyle(
                             color: Colors.redAccent,
@@ -289,7 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             'content': msg.text.toString(),
                           },
                         );
-                        msg.clear();
+
                       });
 
                       // register message
@@ -301,13 +355,18 @@ class _ChatScreenState extends State<ChatScreen> {
                         "numbers": FieldValue.arrayUnion([
                           currentUser?.phoneNumber.toString(),
                           widget.to.toString()
-                        ])
+                        ]),
+                        "timestamp": DateTime.now()
+                            .millisecondsSinceEpoch
+                            .toString(),
                       }, SetOptions(merge: true));
 
                       _controller.animateTo(0.0,
                           duration: Duration(milliseconds: 900),
                           curve: Curves.easeOut);
+                      sendPushMEssage(token, 'New message from ${username}', msg.text.toString());
                     }
+                    msg.clear();
                   },
                   icon: Icon(
                     Icons.send,
@@ -348,6 +407,8 @@ class _NotificationCardState extends State<NotificationCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 240,
+      width: 200,
       padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Container(
         constraints: BoxConstraints(maxWidth: 250),

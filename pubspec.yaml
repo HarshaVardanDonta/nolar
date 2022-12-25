@@ -59,6 +59,7 @@ dependencies:
   path_provider: ^2.0.11
   share: ^2.0.4
   http: ^0.13.5
+  firebase_analytics: ^10.0.8
 
 dev_dependencies:
   flutter_test:

@@ -10,7 +10,6 @@ import 'package:nolar/w.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 
 class Dash extends StatefulWidget {
   const Dash({Key? key}) : super(key: key);
@@ -33,7 +32,10 @@ class _DashState extends State<Dash> {
       children: [
         StreamBuilder(
             stream:
-                FirebaseFirestore.instance.collection("request").snapshots(),
+                FirebaseFirestore.instance
+                    .collection("request")
+                .orderBy('timeStamp', descending: true)
+                    .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return CircularProgressIndicator();
@@ -51,6 +53,7 @@ class _DashState extends State<Dash> {
                           snapChat.data!.docs[i]['roomID']
                         ]);
                       }
+                      print(listRooms);
                       return Column(
                         children: [
                           Container(
