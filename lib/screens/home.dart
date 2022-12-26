@@ -8,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nolar/screens/infoUpdate.dart';
 import 'package:nolar/screens/register.dart';
@@ -16,7 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../w.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:http/http.dart' as http ;
+import 'package:http/http.dart' as http;
 
 import 'dash,dart.dart';
 
@@ -29,38 +30,38 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   var controller = PageController(initialPage: 1);
   User? currentUser = FirebaseAuth.instance.currentUser;
 
   int selectedPage = 1;
   File? file;
-  String deviceToken='';
+  String deviceToken = '';
   @override
-  void initState(){
+  void initState() {
     super.initState();
     getTokern();
     initInfo();
   }
-  initInfo()async{
+
+  initInfo() async {
     var androidSettings = AndroidInitializationSettings("@mipmap/ic_launcher");
     var ios = DarwinInitializationSettings();
     var settings = InitializationSettings(android: androidSettings, iOS: ios);
-    flutterLocalNotificationsPlugin.initialize(
-        settings,
+    flutterLocalNotificationsPlugin.initialize(settings,
         onDidReceiveNotificationResponse: (response) async {
-          setState(() {
-            selectedPage = 2;
-            controller.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.ease);
-          });
-    },
-    onDidReceiveBackgroundNotificationResponse: (response) async {
+      setState(() {
+        selectedPage = 2;
+        controller.animateToPage(2,
+            duration: Duration(milliseconds: 500), curve: Curves.ease);
+      });
+    }, onDidReceiveBackgroundNotificationResponse: (response) async {
       print(response);
-    }
-    );
+    });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async{
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print('......................on message.......................');
       print('${message.notification!.title} and ${message.notification!.body}');
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
@@ -71,7 +72,8 @@ class _HomeState extends State<Home> {
         // summaryText: 'Chat',
         htmlFormatSummaryText: true,
       );
-      AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
+      AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
         'channel id',
         'channel name',
         importance: Importance.max,
@@ -81,29 +83,29 @@ class _HomeState extends State<Home> {
         icon: '@mipmap/ic_launcher',
       );
       DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
-      NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails,iOS:iosDetails );
+      NotificationDetails notificationDetails = NotificationDetails(
+          android: androidNotificationDetails, iOS: iosDetails);
       await flutterLocalNotificationsPlugin.show(
           0,
           '${message.notification!.title}',
           '${message.notification!.body}',
           notificationDetails,
-          payload: message.data['body']
-      );
-
+          payload: message.data['body']);
     });
-
   }
-  getTokern()async {
+
+  getTokern() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     String? token = await messaging.getToken();
     saveToken(token!);
   }
-  saveToken(String token)async{
-    await FirebaseFirestore.instance.collection("userTokens").doc(currentUser!.phoneNumber).set({
-      "token":token
-    },SetOptions(merge: true));
-  }
 
+  saveToken(String token) async {
+    await FirebaseFirestore.instance
+        .collection("userTokens")
+        .doc(currentUser!.phoneNumber)
+        .set({"token": token}, SetOptions(merge: true));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +122,8 @@ class _HomeState extends State<Home> {
         print("set state called");
       });
     }
+
+    String currentUs = currentUser!.phoneNumber.toString();
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -353,13 +357,29 @@ class _HomeState extends State<Home> {
                           decoration: BoxDecoration(
                               color: Colors.red[100],
                               borderRadius: BorderRadius.circular(20)),
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              ProfileButton(content: "Manage Account", icon: Icons.person, tap: () {  },),
-                              ProfileButton(content: "Your Donations", icon: Icons.list, tap: () {  },),
-                              ProfileButton(content: "Certificates", icon: Icons.newspaper_outlined, tap: () {  },),
-                              ProfileButton(content: "Settings", icon: Icons.settings, tap: () {  },),
-
+                              ProfileButton(
+                                content: "Manage Account",
+                                icon: Icons.person,
+                                tap: () {},
+                              ),
+                              ProfileButton(
+                                content: "Your Donations",
+                                icon: Icons.list,
+                                tap: () {},
+                              ),
+                              ProfileButton(
+                                content: "Certificates",
+                                icon: Icons.newspaper_outlined,
+                                tap: () {},
+                              ),
+                              ProfileButton(
+                                content: "Settings",
+                                icon: Icons.settings,
+                                tap: () {},
+                              ),
                             ],
                           ),
                         ),
@@ -376,7 +396,7 @@ class _HomeState extends State<Home> {
                         StreamBuilder(
                             stream: FirebaseFirestore.instance
                                 .collection("chatRooms")
-                                .orderBy("timestamp",descending: true)
+                                .orderBy("timestamp", descending: true)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -401,64 +421,145 @@ class _HomeState extends State<Home> {
                                                     ['numbers'][1] ==
                                                 currentUser?.phoneNumber
                                                     .toString()) {
+                                          String toNumber = (snapshot
+                                                          .data!.docs[index]
+                                                      ['numbers'][0] ==
+                                                  currentUser?.phoneNumber)
+                                              ? "${snapshot.data!.docs[index]['numbers'][1]}"
+                                              : "${snapshot.data!.docs[index]['numbers'][0]}";
+
                                           return InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ChatScreen(
-                                                            grpId: snapshot
-                                                                .data!
-                                                                .docs[index]
-                                                                    ['roomID']
-                                                                .toString(),
-                                                            to: (snapshot.data!.docs[index]
+                                              onTap: () async {
+                                                print(toNumber);
+                                                print(snapshot.data!.docs[index]
+                                                    ['${toNumber} in chat']);
+                                                setState(() {});
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ChatScreen(
+                                                              grpId: snapshot
+                                                                  .data!
+                                                                  .docs[index]
+                                                                      ['roomID']
+                                                                  .toString(),
+                                                              to: (snapshot.data!.docs[index]
+                                                                              [
+                                                                              'numbers']
+                                                                          [0] ==
+                                                                      currentUser
+                                                                          ?.phoneNumber)
+                                                                  ? "${snapshot.data!.docs[index]['numbers'][1]}"
+                                                                  : "${snapshot.data!.docs[index]['numbers'][0]}",
+                                                            ))).then(
+                                                    (value) async {
+                                                  print("chat exited");
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection('chatRooms')
+                                                      .doc(snapshot.data!
+                                                          .docs[index]['roomID']
+                                                          .toString())
+                                                      .update({
+                                                    "${currentUser?.phoneNumber} in chat":
+                                                        false,
+                                                  });
+                                                });
+                                                await FirebaseFirestore.instance
+                                                    .collection('chatRooms')
+                                                    .doc(snapshot.data!
+                                                        .docs[index]['roomID']
+                                                        .toString())
+                                                    .update({
+                                                  "${currentUser?.phoneNumber}":
+                                                      false,
+                                                  "noOfMessages to ${currentUser?.phoneNumber}": 0,
+                                                  "${currentUser?.phoneNumber} in chat":
+                                                      true,
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    20, 10, 20, 10),
+                                                margin: EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  color: (snapshot.data!
+                                                                  .docs[index]
+                                                              [currentUs] ==
+                                                          true)
+                                                      ? Colors.red[200]
+                                                      : Colors.red[100],
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        CircleAvatar(
+                                                          radius: 25,
+                                                          backgroundImage: snapshot ==
+                                                                  ConnectionState
+                                                                      .waiting
+                                                              ? NetworkImage(
+                                                                  "https://via.placeholder.com/150x150.png?text=user")
+                                                              : NetworkImage(
+                                                                  "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${(snapshot.data!.docs[index]['numbers'][0] == currentUser?.phoneNumber) ? snapshot.data!.docs[index]['numbers'][1].toString().substring(3) : snapshot.data!.docs[index]['numbers'][0].toString().substring(3)}?alt=media&token=f99d3d0e-bc27-4cc3-862f-0d3c667fa6a6"),
+                                                        ),
+                                                        SizedBox(width: 20),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            T1(
+                                                                content: (snapshot.data!.docs[index]['numbers']
                                                                             [
-                                                                            'numbers']
-                                                                        [0] ==
-                                                                    currentUser
-                                                                        ?.phoneNumber)
-                                                                ? "${snapshot.data!.docs[index]['numbers'][1]}"
-                                                                : "${snapshot.data!.docs[index]['numbers'][0]}",
-                                                          )));
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.all(20),
-                                              margin: EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.red[100],
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  CircleAvatar(
-                                                    radius: 25,
-                                                    backgroundImage: snapshot ==
-                                                            ConnectionState
-                                                                .waiting
-                                                        ? NetworkImage(
-                                                            "https://via.placeholder.com/150x150.png?text=user")
-                                                        : NetworkImage(
-                                                            "https://firebasestorage.googleapis.com/v0/b/nolar-plus.appspot.com/o/profilePics%2F%2B91${(snapshot.data!.docs[index]['numbers'][0] == currentUser?.phoneNumber) ? snapshot.data!.docs[index]['numbers'][1].toString().substring(3) : snapshot.data!.docs[index]['numbers'][0].toString().substring(3)}?alt=media&token=f99d3d0e-bc27-4cc3-862f-0d3c667fa6a6"),
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  T1(
-                                                      content: (snapshot.data!.docs[
-                                                                          index]
-                                                                      [
-                                                                      'numbers']
-                                                                  [0] ==
-                                                              currentUser
-                                                                  ?.phoneNumber)
-                                                          ? "${snapshot.data!.docs[index]['numbers'][1]}"
-                                                          : "${snapshot.data!.docs[index]['numbers'][0]}",
-                                                      color: Colors.black),
-                                                ],
-                                              ),
-                                            ),
-                                          );
+                                                                            0] ==
+                                                                        currentUser
+                                                                            ?.phoneNumber)
+                                                                    ? "${snapshot.data!.docs[index]['numbers'][1]}"
+                                                                    : "${snapshot.data!.docs[index]['numbers'][0]}",
+                                                                color: Colors
+                                                                    .black),
+                                                            SizedBox(
+                                                              width: 200,
+                                                              child: Text(
+                                                                "${snapshot.data!.docs[index]['lastMessage']}",
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: GoogleFonts.poppins(
+                                                                    textStyle: TextStyle(
+                                                                        fontSize:
+                                                                            15,
+                                                                        color: Colors
+                                                                            .black45,
+                                                                        letterSpacing:
+                                                                            1,
+                                                                        fontWeight:
+                                                                            FontWeight.w300)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    if (snapshot.data!
+                                                                .docs[index]
+                                                            [currentUs] ==
+                                                        true && snapshot.data!.docs[index]['noOfMessages to ${currentUser?.phoneNumber}'] != 0)
+                                                      T1(
+                                                          content:
+                                                              "+${snapshot.data!.docs[index]['noOfMessages to ${currentUser?.phoneNumber}']}",
+                                                          color: Colors.red)
+                                                  ],
+                                                ),
+                                              ));
                                         } else {
                                           return Container();
                                         }

@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-
 class T1 extends StatefulWidget {
   String content;
   Color color;
@@ -184,20 +183,20 @@ class ChatScreen extends StatefulWidget {
   String grpId;
   String to;
 
-  ChatScreen({Key? key, required this.grpId, required this.to})
-      : super(key: key);
+  ChatScreen({Key? key, required this.grpId, required this.to}) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-sendPushMEssage(String token, String title, String body)async{
+sendPushMEssage(String token, String title, String body) async {
   try {
     await http.post(
       Uri.parse("https://fcm.googleapis.com/fcm/send"),
       headers: <String, String>{
         'Content-Type': 'application/json',
-        'Authorization': "key=AAAAJMxDZec:APA91bHnwDneGJs_xg_xO9jVl-ZxrVjT22EOvvcEHTAL0zh01GywTzZhGitF7JFJG5P66v1-XF17MgPPFdfVdUHc85L4aOhYkMAA2B4p2-1AJIsa596YIWn6dTeKJ7vw_mJWk6Rszbde",
+        'Authorization':
+            "key=AAAAJMxDZec:APA91bHnwDneGJs_xg_xO9jVl-ZxrVjT22EOvvcEHTAL0zh01GywTzZhGitF7JFJG5P66v1-XF17MgPPFdfVdUHc85L4aOhYkMAA2B4p2-1AJIsa596YIWn6dTeKJ7vw_mJWk6Rszbde",
       },
       body: jsonEncode(<String, dynamic>{
         'notification': <String, dynamic>{
@@ -215,9 +214,9 @@ sendPushMEssage(String token, String title, String body)async{
         'to': token,
       }),
     );
-    print(token);
+    // print(token);
     print("sent");
-  }catch(e){
+  } catch (e) {
     print(e);
   }
 }
@@ -227,12 +226,14 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _controller = ScrollController();
   User? currentUser = FirebaseAuth.instance.currentUser;
   String token = "";
-  String username ='';
+  String username = '';
   @override
-  void initState(){
+  void initState() {
     super.initState();
     username = currentUser!.phoneNumber!;
   }
+
+  int messagesSent = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -240,142 +241,151 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: Colors.red[200],
         elevation: 0,
         foregroundColor: Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back_ios)),
         title: T1(content: widget.to, color: Colors.white),
       ),
-      body: Column(
-        children: [
-          Expanded(
-              child: Container(
-            color: Colors.red[200],
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("userTokens").doc(widget.to)
-                    .snapshots(),
-                builder: (context, tokenSnap){
-                  // print(widget.to);
-                  token = tokenSnap.data!["token"];
-                  print(token);
-                  // print("token snap shot is ${tokenSnap.data!["token"]}");
-                  return StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection("messages")
-                        .doc(widget.grpId)
-                        .collection(widget.grpId)
-                        .orderBy('timestamp', descending: true)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
-                      } else {
-                        return ListView.builder(
-                          controller: _controller,
-                          itemCount: snapshot.data?.docs.length,
-                          reverse: true,
-                          itemBuilder: (context, index) => BubbleChat(
-                              content:
-                              snapshot.data!.docs[index]['content'].toString(),
-                              from:
-                              snapshot.data!.docs[index]['idFrom'].toString()),
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-          )),
-          Row(
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("chatRooms")
+            .doc(widget.grpId)
+            .snapshots(),
+        builder: (context, canSend){
+          return Column(
             children: [
               Expanded(
-                child: TextField(
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  controller: msg,
-                  style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
-                          color: Colors.redAccent,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.w500)),
-                  decoration: InputDecoration(
-                    hintText: "Start writing",
-                    hintStyle: GoogleFonts.poppins(
-                        textStyle: TextStyle(
-                            color: Colors.redAccent,
-                            letterSpacing: 1,
-                            fontWeight: FontWeight.w500)),
-                    contentPadding: EdgeInsets.all(8),
-                    // enabledBorder: OutlineInputBorder(
-                    //     borderRadius: BorderRadius.circular(0),
-                    //     borderSide:
-                    //         BorderSide(color: Colors.redAccent, width: 1.5)),
-                    // focusedBorder: OutlineInputBorder(
-                    //     borderRadius: BorderRadius.circular(0),
-                    //     borderSide:
-                    //         BorderSide(color: Colors.redAccent, width: 2.5)),
+                  child: Container(
+                    color: Colors.red[200],
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("userTokens")
+                            .doc(widget.to)
+                            .snapshots(),
+                        builder: (context, tokenSnap) {
+                          token = tokenSnap.data!["token"];
+                          print(token);
+                          return StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection("messages")
+                                .doc(widget.grpId)
+                                .collection(widget.grpId)
+                                .orderBy('timestamp', descending: true)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(child: CircularProgressIndicator());
+                              } else {
+                                return ListView.builder(
+                                  controller: _controller,
+                                  itemCount: snapshot.data?.docs.length,
+                                  reverse: true,
+                                  itemBuilder: (context, index) => BubbleChat(
+                                      content: snapshot.data!.docs[index]['content']
+                                          .toString(),
+                                      from: snapshot.data!.docs[index]['idFrom']
+                                          .toString()),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  )),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      controller: msg,
+                      style: GoogleFonts.poppins(
+                          textStyle: TextStyle(
+                              color: Colors.redAccent,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.w500)),
+                      decoration: InputDecoration(
+                        hintText: "Start writing",
+                        hintStyle: GoogleFonts.poppins(
+                            textStyle: TextStyle(
+                                color: Colors.redAccent,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.w500)),
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-
-              //send button
-              IconButton(
-                  onPressed: () async {
-                    if (msg.text.toString().trim() != '') {
-                      //write message
-                      var documentReference = FirebaseFirestore.instance
-                          .collection('messages')
-                          .doc(widget.grpId)
-                          .collection(widget.grpId)
-                          .doc(
+                  //send button
+                  IconButton(
+                      onPressed: () async {
+                        if (msg.text.toString().trim() != '') {
+                          //write message
+                          var documentReference = FirebaseFirestore.instance
+                              .collection('messages')
+                              .doc(widget.grpId)
+                              .collection(widget.grpId)
+                              .doc(
                               DateTime.now().millisecondsSinceEpoch.toString());
 
-                      FirebaseFirestore.instance
-                          .runTransaction((transaction) async {
-                        await transaction.set(
-                          documentReference,
-                          {
-                            'idFrom': currentUser?.phoneNumber,
-                            'idTo': widget.to,
-                            'timestamp': DateTime.now()
-                                .millisecondsSinceEpoch
-                                .toString(),
-                            'content': msg.text.toString(),
-                          },
-                        );
+                          FirebaseFirestore.instance
+                              .runTransaction((transaction) async {
+                            await transaction.set(
+                              documentReference,
+                              {
+                                'idFrom': currentUser?.phoneNumber,
+                                'idTo': widget.to,
+                                'timestamp': DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString(),
+                                'content': msg.text.toString(),
+                              },
+                            );
+                          });
 
-                      });
+                          // register message
+                          await FirebaseFirestore.instance
+                              .collection("chatRooms")
+                              .doc(widget.grpId)
+                              .set({
+                            "roomID": widget.grpId,
+                            "numbers": FieldValue.arrayUnion([
+                              currentUser?.phoneNumber.toString(),
+                              widget.to.toString()
+                            ]),
+                            widget.to.toString(): true,
+                            "noOfMessages to ${widget.to}": FieldValue.increment(1),
+                            "lastMessage": msg.text.toString(),
+                            "timestamp":
+                            DateTime.now().millisecondsSinceEpoch.toString(),
+                          }, SetOptions(merge: true));
 
-                      // register message
-                      await FirebaseFirestore.instance
-                          .collection("chatRooms")
-                          .doc(widget.grpId)
-                          .set({
-                        "roomID": widget.grpId,
-                        "numbers": FieldValue.arrayUnion([
-                          currentUser?.phoneNumber.toString(),
-                          widget.to.toString()
-                        ]),
-                        "timestamp": DateTime.now()
-                            .millisecondsSinceEpoch
-                            .toString(),
-                      }, SetOptions(merge: true));
-
-                      _controller.animateTo(0.0,
-                          duration: Duration(milliseconds: 900),
-                          curve: Curves.easeOut);
-                      sendPushMEssage(token, 'New message from ${username}', msg.text.toString());
-                    }
-                    msg.clear();
-                  },
-                  icon: Icon(
-                    Icons.send,
-                    color: Colors.red,
-                  )),
+                          _controller.animateTo(0.0,
+                              duration: Duration(milliseconds: 900),
+                              curve: Curves.easeOut);
+                          //send notifications
+                          if(!canSend.data!["${widget.to} in chat"] == true){
+                            sendPushMEssage(token, 'New message from ${username}',
+                                msg.text.toString());
+                          }
+                        }
+                        msg.clear();
+                      },
+                      icon: Icon(
+                        Icons.send,
+                        color: Colors.red,
+                      )),
+                ],
+              ),
             ],
-          ),
-        ],
-      ),
+          );
+
+        },
+      )
     );
   }
 }
