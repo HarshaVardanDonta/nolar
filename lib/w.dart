@@ -368,10 +368,10 @@ class _ChatScreenState extends State<ChatScreen> {
                               duration: Duration(milliseconds: 900),
                               curve: Curves.easeOut);
                           //send notifications
-                          if(!canSend.data!["${widget.to} in chat"] == true){
+                          // if(!canSend.data!["${widget.to} in chat"] == true){
                             sendPushMEssage(token, 'New message from ${username}',
                                 msg.text.toString());
-                          }
+                          // }
                         }
                         msg.clear();
                       },

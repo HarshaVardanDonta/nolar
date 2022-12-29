@@ -430,13 +430,11 @@ class _HomeState extends State<Home> {
 
                                           return InkWell(
                                               onTap: () async {
-                                                print(toNumber);
-                                                print(snapshot.data!.docs[index]
-                                                    ['${toNumber} in chat']);
                                                 setState(() {});
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
+
                                                         builder: (context) =>
                                                             ChatScreen(
                                                               grpId: snapshot
@@ -466,6 +464,9 @@ class _HomeState extends State<Home> {
                                                         false,
                                                   });
                                                 });
+                                                print(toNumber);
+                                                print(snapshot.data!.docs[index]
+                                                ['${toNumber} in chat']);
                                                 await FirebaseFirestore.instance
                                                     .collection('chatRooms')
                                                     .doc(snapshot.data!
