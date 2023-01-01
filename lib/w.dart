@@ -357,21 +357,53 @@ class _ChatScreenState extends State<ChatScreen> {
                               currentUser?.phoneNumber.toString(),
                               widget.to.toString()
                             ]),
-                            widget.to.toString(): true,
-                            "noOfMessages to ${widget.to}": FieldValue.increment(1),
                             "lastMessage": msg.text.toString(),
                             "timestamp":
                             DateTime.now().millisecondsSinceEpoch.toString(),
                           }, SetOptions(merge: true));
+                          try{
+                            await FirebaseFirestore.instance.collection('chatRooms').doc(widget.grpId).set(
+                              {
+                                "noOfMessages to ${widget.to}":(canSend.data!["${widget.to} in chat"] == false)? FieldValue.increment(1):0,
+                                "${widget.to}":(canSend.data!["${widget.to} in chat"] == false)?true:false
+                              },SetOptions(merge: true)
+                            );
+                          }
+                          catch(e){
+                            await FirebaseFirestore.instance.collection('chatRooms').doc(widget.grpId).set(
+                                {
+                                  "noOfMessages to ${widget.to}": FieldValue.increment(1),
+                                  "${widget.to}":true,
+                                },SetOptions(merge: true)
+                            );
+                          }
 
                           _controller.animateTo(0.0,
                               duration: Duration(milliseconds: 900),
                               curve: Curves.easeOut);
                           //send notifications
-                          // if(!canSend.data!["${widget.to} in chat"] == true){
+                          try{
+                                if(canSend.data!["${widget.to} in chat"] == false){
+                                  sendPushMEssage(token, 'New message from ${username}',
+                                      msg.text.toString());
+                                }
+                          }catch(e){
                             sendPushMEssage(token, 'New message from ${username}',
                                 msg.text.toString());
-                          // }
+                          }
+                          // if(canSend.data!.containsKey('${widget.to} in chat')){
+                          //     if(canSend.data!["${widget.to} in chat"] == false){
+                          //       sendPushMEssage(token, 'New message from ${username}',
+                          //           msg.text.toString());
+                          //     }
+                          //   }else{
+                          //   print(canSend.data.toString());
+                          //   print("first push");
+                          //       sendPushMEssage(token, 'New message from ${username}',
+                          //       msg.text.toString());
+                          //   }
+
+
                         }
                         msg.clear();
                       },
