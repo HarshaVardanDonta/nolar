@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "158045791719-dioe82kck1tfrgi5pkdkl94b8m0gdhsj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nolar",
+            "certificate_hash": "da210da21932f1aa26c8f3b7720b59bfeae4f594"
+          }
+        },
+        {
+          "client_id": "158045791719-o18cchv02k65u93l6tq07qpa3mutpm1q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nolar",
+            "certificate_hash": "e9f09c451aecc504f2f4a6f995e2f7d18ca19811"
+          }
+        },
+        {
           "client_id": "158045791719-pvr0tvkr3jhai73l6c9gbnarq94nf2ao.apps.googleusercontent.com",
           "client_type": 3
         }

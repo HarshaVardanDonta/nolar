@@ -45,12 +45,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyClccMoytSEMej8kpTD4M5BnNwe7RWdrPw',
-    appId: '1:158045791719:web:d3aec40fd10a80f53cc942',
+    appId: '1:158045791719:web:5025cc856ac536da3cc942',
     messagingSenderId: '158045791719',
     projectId: 'nolar-plus',
     authDomain: 'nolar-plus.firebaseapp.com',
     storageBucket: 'nolar-plus.appspot.com',
-    measurementId: 'G-SD8170CPVX',
+    measurementId: 'G-W5RHYZEC7J',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -63,20 +63,22 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBRW8EYUXAzzCkPthLr5ZrGMQDXzX40m8M',
-    appId: '1:158045791719:ios:02e0d0185a1b8bbf3cc942',
+    appId: '1:158045791719:ios:8e42a26c1123a2963cc942',
     messagingSenderId: '158045791719',
     projectId: 'nolar-plus',
     storageBucket: 'nolar-plus.appspot.com',
+    androidClientId: '158045791719-dioe82kck1tfrgi5pkdkl94b8m0gdhsj.apps.googleusercontent.com',
     iosClientId: '158045791719-4dmuarbsf35005vn98bkil6hcue3g81h.apps.googleusercontent.com',
     iosBundleId: 'com.example.nolar',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBRW8EYUXAzzCkPthLr5ZrGMQDXzX40m8M',
-    appId: '1:158045791719:ios:02e0d0185a1b8bbf3cc942',
+    appId: '1:158045791719:ios:8e42a26c1123a2963cc942',
     messagingSenderId: '158045791719',
     projectId: 'nolar-plus',
     storageBucket: 'nolar-plus.appspot.com',
+    androidClientId: '158045791719-dioe82kck1tfrgi5pkdkl94b8m0gdhsj.apps.googleusercontent.com',
     iosClientId: '158045791719-4dmuarbsf35005vn98bkil6hcue3g81h.apps.googleusercontent.com',
     iosBundleId: 'com.example.nolar',
   );

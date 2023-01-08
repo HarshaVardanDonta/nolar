@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -64,6 +65,7 @@ class _HomeState extends State<Home> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print('......................on message.......................');
       print('${message.notification!.title} and ${message.notification!.body}');
+
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
         '${message.notification!.body}',
         htmlFormatBigText: true,
@@ -72,6 +74,14 @@ class _HomeState extends State<Home> {
         // summaryText: 'Chat',
         htmlFormatSummaryText: true,
       );
+
+      DarwinInitializationSettings iosInitializationSettings =
+      DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails(
         'channel id',
@@ -82,9 +92,16 @@ class _HomeState extends State<Home> {
         playSound: true,
         icon: '@mipmap/ic_launcher',
       );
-      DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
+      DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+
+      );
+      InitializationSettings initSettings = InitializationSettings(
+        iOS: iosInitializationSettings
+      );
       NotificationDetails notificationDetails = NotificationDetails(
           android: androidNotificationDetails, iOS: iosDetails);
+      flutterLocalNotificationsPlugin.initialize(initSettings);
+
       await flutterLocalNotificationsPlugin.show(
           0,
           '${message.notification!.title}',
