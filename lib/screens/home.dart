@@ -75,12 +75,13 @@ class _HomeState extends State<Home> {
         htmlFormatSummaryText: true,
       );
 
-      DarwinInitializationSettings iosInitializationSettings =
+       DarwinInitializationSettings iosInitializationSettings =
       DarwinInitializationSettings(
         requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
       );
+
 
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails(
@@ -93,14 +94,14 @@ class _HomeState extends State<Home> {
         icon: '@mipmap/ic_launcher',
       );
       DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-
+        subtitle: 'title',
       );
       InitializationSettings initSettings = InitializationSettings(
         iOS: iosInitializationSettings
       );
       NotificationDetails notificationDetails = NotificationDetails(
           android: androidNotificationDetails, iOS: iosDetails);
-      flutterLocalNotificationsPlugin.initialize(initSettings);
+      await flutterLocalNotificationsPlugin.initialize(initSettings);
 
       await flutterLocalNotificationsPlugin.show(
           0,
