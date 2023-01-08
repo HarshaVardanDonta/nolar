@@ -82,7 +82,6 @@ class _HomeState extends State<Home> {
         requestSoundPermission: false,
       );
 
-
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails(
         'channel id',
@@ -93,15 +92,13 @@ class _HomeState extends State<Home> {
         playSound: true,
         icon: '@mipmap/ic_launcher',
       );
-      DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-        subtitle: 'title',
-      );
       InitializationSettings initSettings = InitializationSettings(
         iOS: iosInitializationSettings
       );
       NotificationDetails notificationDetails = NotificationDetails(
-          android: androidNotificationDetails, iOS: iosDetails);
-      await flutterLocalNotificationsPlugin.initialize(initSettings);
+          android: androidNotificationDetails);
+      await flutterLocalNotificationsPlugin.initialize(initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse r){});
 
       await flutterLocalNotificationsPlugin.show(
           0,
