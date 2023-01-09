@@ -8,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -75,8 +76,8 @@ class _HomeState extends State<Home> {
         htmlFormatSummaryText: true,
       );
 
-       DarwinInitializationSettings iosInitializationSettings =
-      DarwinInitializationSettings(
+      DarwinInitializationSettings iosInitializationSettings =
+          DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: false,
         requestSoundPermission: false,
@@ -92,13 +93,12 @@ class _HomeState extends State<Home> {
         playSound: true,
         icon: '@mipmap/ic_launcher',
       );
-      InitializationSettings initSettings = InitializationSettings(
-        iOS: iosInitializationSettings
-      );
-      NotificationDetails notificationDetails = NotificationDetails(
-          android: androidNotificationDetails);
+      InitializationSettings initSettings =
+          InitializationSettings(iOS: iosInitializationSettings);
+      NotificationDetails notificationDetails =
+          NotificationDetails(android: androidNotificationDetails);
       await flutterLocalNotificationsPlugin.initialize(initSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse r){});
+          onDidReceiveNotificationResponse: (NotificationResponse r) {});
 
       await flutterLocalNotificationsPlugin.show(
           0,
@@ -138,60 +138,79 @@ class _HomeState extends State<Home> {
       });
     }
 
-    String currentUs = currentUser!.phoneNumber.toString();
+    String currentUs = currentUser!.displayName.toString();
+    final GlobalKey<ScaffoldState> _key = GlobalKey(); //
 
     return Scaffold(
+        key: _key,
         backgroundColor: Colors.white,
-        appBar: (currentUser?.displayName != null &&
-                currentUser?.phoneNumber != null)
-            ? AppBar(
-                toolbarHeight: 60,
-                foregroundColor: Colors.red,
-                backgroundColor: Colors.white,
-                elevation: 0,
-                title: SizedBox(
-                    height: 20, child: Image.asset("assets/logo3.png")),
-                actions: [
-                  selectedPage != 0
-                      ? Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: InkWell(
-                            onTap: () {
-                              controller.animateToPage(0,
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.ease);
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black,
-                              radius: 20,
-                              child: Icon(
-                                Icons.account_circle_sharp,
-                                size: 25,
-                              ),
-                            ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          titleSpacing: 0,
+          automaticallyImplyLeading: false,
+          title: Container(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        T2(content: 'Welcome,', color: Colors.black),
+                        T1(content: currentUs, color: Colors.black),
+                      ],
+                    ),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _key.currentState!.openDrawer();
+                  },
+                  child: Container(
+                    width: 72,
+                    margin: EdgeInsets.only(right: 10),
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(50)),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned(
+                          right: 0,
+                          child: CircleAvatar(
+                            radius: 17,
+                            backgroundImage: NetworkImage(picUrl!),
                           ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: InkWell(
-                            onTap: () {},
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black,
-                              radius: 20,
-                              child: Icon(
-                                Icons.settings,
-                                size: 25,
-                              ),
-                            ),
+                        ),
+                        ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25),
+                                bottomLeft: Radius.circular(25)),
+                            child: Image.asset("assets/circleShadow.png")),
+                        Positioned(
+                          left: 0,
+                          child: CircleAvatar(
+                            radius: 17,
+                            backgroundColor: Colors.red[300],
+                            child: T2(content: 'A+', color: Colors.white),
                           ),
-                        )
-                ],
-              )
-            : AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                elevation: 0,
-              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         drawer: Align(
           alignment: Alignment.topLeft,
           child: SafeArea(
