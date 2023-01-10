@@ -22,6 +22,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:http/http.dart' as http;
 
 import 'dash,dart.dart';
+import 'messages.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -857,9 +858,7 @@ class _HomeState extends State<Home> {
                         size: 30,
                       ),
                       onPressed: () {
-                        controller.animateToPage(2,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.ease);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> Messages()));
                       },
                     ),
                     IconButton(

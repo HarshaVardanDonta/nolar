@@ -53,7 +53,6 @@ class _DashState extends State<Dash> {
                           snapChat.data!.docs[i]['roomID']
                         ]);
                       }
-                      print(listRooms);
                       return Column(
                         children: [
                           Container(

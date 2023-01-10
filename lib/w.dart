@@ -545,7 +545,7 @@ class _BubbleChatState extends State<BubbleChat> {
         margin: EdgeInsets.all(8),
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: Colors.white,
+            color:(widget.from == currentUser?.phoneNumber)?Colors.red[100]: Colors.white,
             borderRadius: (widget.from == currentUser?.phoneNumber)
                 ? BorderRadius.only(
                     topLeft: Radius.circular(16),
